@@ -1,0 +1,35 @@
+services:
+  # Master 
+  db-master:
+    image: mysql:8.0
+    container_name: mysql-master
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: cfr_db
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysql/master:/etc/mysql/conf.d
+
+  # Slave 
+  db-slave:
+    image: mysql:8.0
+    container_name: mysql-slave
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+    depends_on:
+      - db-master
+    volumes:
+      - ./mysql/slave:/etc/mysql/conf.d
+
+  # Database GUI
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    links:
+      - db-master
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: db-master
+      MYSQL_ROOT_PASSWORD: root_password
