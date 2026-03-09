@@ -7,7 +7,7 @@ services:
       MYSQL_ROOT_PASSWORD: root_password
       MYSQL_DATABASE: cfr_db
     volumes:
-      - ./mysql/master/my.cnf:/etc/mysql/conf.d/my.cnf
+      - ./mysql/master:/etc/mysql/conf.d
     ports:
       - "3306:3306"
 
@@ -18,7 +18,7 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: root_password
     volumes:
-      - ./mysql/slave/my.cnf:/etc/mysql/conf.d/my.cnf
+      - ./mysql/slave:/etc/mysql/conf.d
     depends_on:
       - db-master
 
