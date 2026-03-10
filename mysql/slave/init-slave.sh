@@ -24,14 +24,14 @@ LOG_POS=$(echo "$MASTER_STATUS" | grep Position | awk '{print $2}')
 echo "Configuring replication..."
 
 mysql -uroot -proot_password <<EOF
-STOP SLAVE;
-CHANGE MASTER TO
-MASTER_HOST='db-master',
-MASTER_USER='replica',
-MASTER_PASSWORD='replica_pass',
-MASTER_LOG_FILE='$LOG_FILE',
-MASTER_LOG_POS=$LOG_POS;
-START SLAVE;
+STOP REPLICA;
+CHANGE REPLICATION SOURCE TO
+SOURCE_HOST='db-master',
+SOURCE_USER='replica',
+SOURCE_PASSWORD='replica_pass',
+SOURCE_LOG_FILE='$LOG_FILE',
+SOURCE_LOG_POS=$LOG_POS;
+START REPLICA;
 EOF
 
 echo "Replication configured"
