@@ -1,5 +1,6 @@
 [mysqld]
 server-id=1
 log-bin=mysql-bin
+binlog_format=ROW
 binlog-do-db=cfr_db
 bind-address=0.0.0.0

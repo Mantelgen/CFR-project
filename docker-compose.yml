@@ -7,15 +7,17 @@ services:
       MYSQL_ROOT_PASSWORD: root_password
       MYSQL_DATABASE: cfr_db
     volumes:
-      - ./mysql/master:/etc/mysql/conf.d
+      - db-master-data:/var/lib/mysql
+      - ./mysql/master/master.cnf:/etc/mysql/conf.d/master.cnf:ro
+      - ./mysql/master/init-master.sql:/docker-entrypoint-initdb.d/init-master.sql:ro
     ports:
       - "3306:3306"
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot_password"]
-      interval: 10s
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "--protocol=TCP", "-u", "root", "-proot_password"]
+      interval: 5s
       timeout: 5s
-      retries: 5
-      start_period: 30s
+      retries: 20
+      start_period: 120s
 
   db-slave:
     image: mysql:8.0
@@ -24,10 +26,18 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: root_password
     volumes:
-      - ./mysql/slave:/etc/mysql/conf.d
+      - db-slave-data:/var/lib/mysql
+      - ./mysql/slave/slave.cnf:/etc/mysql/conf.d/slave.cnf:ro
+      - ./mysql/slave/init-slave.sh:/docker-entrypoint-initdb.d/init-slave.sh:ro
     depends_on:
       db-master:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "--protocol=TCP", "-u", "root", "-proot_password"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 120s
 
   migration:
     build: ./backend
@@ -37,6 +47,7 @@ services:
       - SPRING_DATASOURCE_PASSWORD=root_password
       - SPRING_LIQUIBASE_ENABLED=true
       - SPRING_MAIN_WEB_APPLICATION_TYPE=none
+      - SPRING_SESSION_STORE_TYPE=none
     depends_on:
       db-master:
         condition: service_healthy
@@ -45,14 +56,14 @@ services:
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     container_name: phpmyadmin
-    links:
-      - db-master
-      - db-slave
     ports:
       - "8081:80"
     environment:
       PMA_HOSTS: db-master,db-slave
       MYSQL_ROOT_PASSWORD: root_password
+    depends_on:
+      db-master:
+        condition: service_healthy
 
   backend:
     build: ./backend
@@ -62,11 +73,18 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:mysql://db-master:3306/cfr_db?allowPublicKeyRetrieval=true&useSSL=false
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=root_password
+      - SPRING_LIQUIBASE_ENABLED=false
     depends_on:
       db-master:
         condition: service_healthy
       migration:
         condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:8080/api/status || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
 
   nginx:
     image: nginx:latest
@@ -77,3 +95,7 @@ services:
       - backend
     ports:
       - "8080:8080"
+
+volumes:
+  db-master-data:
+  db-slave-data:
