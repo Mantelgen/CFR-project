@@ -1,29 +1,20 @@
 #!/bin/bash
+set -e
 
-echo "Waiting for MySQL slave to start..."
-
-until mysql -h 127.0.0.1 --protocol=TCP -uroot -proot_password -e "SELECT 1" > /dev/null 2>&1; do
-  sleep 2
-done
-
-echo "Slave MySQL started"
-
-echo "Waiting for master..."
-
-until mysql -h db-master -uroot -proot_password -e "SELECT 1" > /dev/null 2>&1; do
-  sleep 2
-done
-
-echo "Master ready"
-
+echo "Getting master binlog position..."
 MASTER_STATUS=$(mysql -h db-master -uroot -proot_password -e "SHOW MASTER STATUS\G")
 
 LOG_FILE=$(echo "$MASTER_STATUS" | grep -m1 " File:" | awk '{print $2}')
 LOG_POS=$(echo "$MASTER_STATUS" | grep -m1 " Position:" | awk '{print $2}')
 
+if [ -z "$LOG_FILE" ] || [ -z "$LOG_POS" ]; then
+  echo "ERROR: Could not retrieve master binlog position" >&2
+  exit 1
+fi
+
 echo "Configuring replication from $LOG_FILE @ $LOG_POS ..."
 
-mysql -h 127.0.0.1 --protocol=TCP -uroot -proot_password <<EOF
+mysql -h db-slave -uroot -proot_password <<EOF
 STOP REPLICA;
 CHANGE REPLICATION SOURCE TO
   SOURCE_HOST='db-master',
@@ -34,4 +25,4 @@ CHANGE REPLICATION SOURCE TO
 START REPLICA;
 EOF
 
-echo "Replication configured"
+echo "Replication configured successfully"

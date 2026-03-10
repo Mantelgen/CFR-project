@@ -28,7 +28,6 @@ services:
     volumes:
       - db-slave-data:/var/lib/mysql
       - ./mysql/slave/slave.cnf:/etc/mysql/conf.d/slave.cnf:ro
-      - ./mysql/slave/init-slave.sh:/docker-entrypoint-initdb.d/init-slave.sh:ro
     depends_on:
       db-master:
         condition: service_healthy
@@ -37,7 +36,19 @@ services:
       interval: 5s
       timeout: 5s
       retries: 20
-      start_period: 120s
+      start_period: 360s
+
+  replication-setup:
+    image: mysql:8.0
+    restart: "no"
+    depends_on:
+      db-master:
+        condition: service_healthy
+      db-slave:
+        condition: service_healthy
+    volumes:
+      - ./mysql/slave/init-slave.sh:/init-slave.sh:ro
+    entrypoint: bash /init-slave.sh
 
   migration:
     build: ./backend
@@ -63,6 +74,8 @@ services:
       MYSQL_ROOT_PASSWORD: root_password
     depends_on:
       db-master:
+        condition: service_healthy
+      db-slave:
         condition: service_healthy
 
   backend:
