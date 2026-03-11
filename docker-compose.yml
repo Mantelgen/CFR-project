@@ -1,8 +1,9 @@
 services:
+
   db-master:
     image: mysql:8.0
     container_name: mysql-master
-    restart: always
+    restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: root_password
       MYSQL_DATABASE: cfr_db
@@ -13,7 +14,7 @@ services:
     ports:
       - "3306:3306"
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "--protocol=TCP", "-u", "root", "-proot_password"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-proot_password"]
       interval: 5s
       timeout: 5s
       retries: 20
@@ -22,74 +23,57 @@ services:
   db-slave:
     image: mysql:8.0
     container_name: mysql-slave
-    restart: always
+    restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: root_password
     volumes:
       - db-slave-data:/var/lib/mysql
       - ./mysql/slave/slave.cnf:/etc/mysql/conf.d/slave.cnf:ro
+      - ./mysql/slave/init-slave-db.sql:/docker-entrypoint-initdb.d/init-slave-db.sql:ro
     depends_on:
       db-master:
         condition: service_healthy
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "--protocol=TCP", "-u", "root", "-proot_password"]
-      interval: 5s
-      timeout: 5s
-      retries: 20
-      start_period: 360s
 
   replication-setup:
     image: mysql:8.0
+    container_name: mysql-replication-init
     restart: "no"
     depends_on:
       db-master:
         condition: service_healthy
       db-slave:
-        condition: service_healthy
+        condition: service_started
     volumes:
       - ./mysql/slave/init-slave.sh:/init-slave.sh:ro
     entrypoint: bash /init-slave.sh
 
   migration:
     build: ./backend
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://db-master:3306/cfr_db?allowPublicKeyRetrieval=true&useSSL=false
-      - SPRING_DATASOURCE_USERNAME=root
-      - SPRING_DATASOURCE_PASSWORD=root_password
-      - SPRING_LIQUIBASE_ENABLED=true
-      - SPRING_MAIN_WEB_APPLICATION_TYPE=none
-      - SPRING_SESSION_STORE_TYPE=none
-    depends_on:
-      db-master:
-        condition: service_healthy
+    command: java -jar app.jar \
+            --spring.liquibase.enabled=true \
+            --spring.main.web-application-type=none
+    container_name: db-migration
     restart: "no"
-
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    container_name: phpmyadmin
-    ports:
-      - "8081:80"
     environment:
-      PMA_HOSTS: db-master,db-slave
-      MYSQL_ROOT_PASSWORD: root_password
+      SPRING_DATASOURCE_URL: jdbc:mysql://db-master:3306/cfr_db?allowPublicKeyRetrieval=true&useSSL=false
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root_password
+      SPRING_LIQUIBASE_ENABLED: true
+      SPRING_MAIN_WEB_APPLICATION_TYPE: none
+      SPRING_SESSION_STORE_TYPE: none
     depends_on:
-      db-master:
-        condition: service_healthy
-      db-slave:
-        condition: service_healthy
+      replication-setup:
+        condition: service_completed_successfully
 
   backend:
     build: ./backend
-    deploy:
-      replicas: 3
+    restart: unless-stopped
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://db-master:3306/cfr_db?allowPublicKeyRetrieval=true&useSSL=false
-      - SPRING_DATASOURCE_USERNAME=root
-      - SPRING_DATASOURCE_PASSWORD=root_password
-      - SPRING_LIQUIBASE_ENABLED=false
+      SPRING_DATASOURCE_URL: jdbc:mysql://db-master:3306/cfr_db?allowPublicKeyRetrieval=true&useSSL=false
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root_password
+      SPRING_LIQUIBASE_ENABLED: false
     depends_on:
-      db-master:
-        condition: service_healthy
       migration:
         condition: service_completed_successfully
     healthcheck:
@@ -99,9 +83,23 @@ services:
       retries: 5
       start_period: 40s
 
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    restart: unless-stopped
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOSTS: db-master,db-slave
+      MYSQL_ROOT_PASSWORD: root_password
+    depends_on:
+      - db-master
+      - db-slave
+
   nginx:
     image: nginx:latest
     container_name: nginx-lb
+    restart: unless-stopped
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:

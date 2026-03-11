@@ -1,18 +1,23 @@
 #!/bin/bash
 set -e
 
+echo "Waiting for master..."
+until mysql -h db-master -uroot -proot_password -e "SELECT 1" >/dev/null 2>&1; do
+  sleep 3
+done
+
+echo "Waiting for slave..."
+until mysql -h db-slave -uroot -proot_password -e "SELECT 1" >/dev/null 2>&1; do
+  sleep 3
+done
+
 echo "Getting master binlog position..."
 MASTER_STATUS=$(mysql -h db-master -uroot -proot_password -e "SHOW MASTER STATUS\G")
 
 LOG_FILE=$(echo "$MASTER_STATUS" | grep -m1 " File:" | awk '{print $2}')
 LOG_POS=$(echo "$MASTER_STATUS" | grep -m1 " Position:" | awk '{print $2}')
 
-if [ -z "$LOG_FILE" ] || [ -z "$LOG_POS" ]; then
-  echo "ERROR: Could not retrieve master binlog position" >&2
-  exit 1
-fi
-
-echo "Configuring replication from $LOG_FILE @ $LOG_POS ..."
+echo "Configuring replication..."
 
 mysql -h db-slave -uroot -proot_password <<EOF
 STOP REPLICA;
