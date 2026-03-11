@@ -11,5 +11,8 @@ FROM nginx:alpine
 COPY --from=build /app/build /usr/share/nginx/html
 COPY default.conf /etc/nginx/conf.d/default.conf
 RUN rm /etc/nginx/conf.d/default.conf.default 2>/dev/null || true
+
+RUN apk add --no-cache wget
+
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]

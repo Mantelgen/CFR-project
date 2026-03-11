@@ -56,7 +56,6 @@ services:
       - cfr-network
 
 
-
   migration:
     build:
       context: ./liquibase
@@ -74,13 +73,13 @@ services:
       --password=root_password
       --changeLogFile=db.changelog-master.xml
       update
+    networks:
+      - cfr-network
 
   frontend:
     build:
       context: ./frontend
     container_name: cfr-frontend
-    networks:
-      - cfr-network
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "wget -q --spider http://localhost/health || exit 1"]
@@ -88,14 +87,14 @@ services:
       timeout: 5s
       retries: 3
       start_period: 30s
+    networks:
+      - cfr-network
 
 
   backend:
     build:
       context: ./backend
     restart: unless-stopped
-    networks:
-      - cfr-network
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://db-master:3306/cfr_db?allowPublicKeyRetrieval=true&useSSL=false
       SPRING_DATASOURCE_USERNAME: root
@@ -110,6 +109,8 @@ services:
       timeout: 5s
       retries: 5
       start_period: 40s
+    networks:
+      - cfr-network
 
 
   phpmyadmin:
@@ -132,8 +133,6 @@ services:
     image: nginx:latest
     container_name: nginx-lb
     restart: unless-stopped
-    networks:
-      - cfr-network
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
@@ -144,6 +143,8 @@ services:
     ports:
       - "80:80"
       - "8080:8080"
+    networks:
+      - cfr-network
 
 
 volumes:
