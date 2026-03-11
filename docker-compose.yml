@@ -19,6 +19,8 @@ services:
       timeout: 5s
       retries: 20
       start_period: 40s
+    networks:
+      - cfr-network
 
 
   db-slave:
@@ -34,6 +36,8 @@ services:
     depends_on:
       db-master:
         condition: service_healthy
+    networks:
+      - cfr-network
 
 
   replication-setup:
@@ -48,6 +52,9 @@ services:
     volumes:
       - ./mysql/slave/init-slave.sh:/init-slave.sh:ro
     entrypoint: ["bash","/init-slave.sh"]
+    networks:
+      - cfr-network
+
 
 
   migration:
@@ -61,17 +68,34 @@ services:
     volumes:
       - ./backend/src/main/resources/db/changelog:/liquibase/changelog
     command:
+      --searchPath=/liquibase/changelog
       --url=jdbc:mysql://db-master:3306/cfr_db
       --username=root
       --password=root_password
-      --changeLogFile=changelog/db.changelog-master.xml
+      --changeLogFile=db.changelog-master.xml
       update
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: cfr-frontend
+    networks:
+      - cfr-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
 
 
   backend:
     build:
       context: ./backend
     restart: unless-stopped
+    networks:
+      - cfr-network
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://db-master:3306/cfr_db?allowPublicKeyRetrieval=true&useSSL=false
       SPRING_DATASOURCE_USERNAME: root
@@ -100,21 +124,32 @@ services:
     depends_on:
       - db-master
       - db-slave
+    networks:
+      - cfr-network
 
 
   nginx:
     image: nginx:latest
     container_name: nginx-lb
     restart: unless-stopped
+    networks:
+      - cfr-network
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
       backend:
         condition: service_healthy
+      frontend:
+        condition: service_healthy
     ports:
+      - "80:80"
       - "8080:8080"
 
 
 volumes:
   db-master-data:
   db-slave-data:
+
+networks:
+  cfr-network:
+    driver: bridge
