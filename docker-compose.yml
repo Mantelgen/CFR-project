@@ -49,9 +49,6 @@ services:
 
   migration:
     build: ./backend
-    command: java -jar app.jar \
-            --spring.liquibase.enabled=true \
-            --spring.main.web-application-type=none
     container_name: db-migration
     restart: "no"
     environment:
