@@ -7,7 +7,9 @@ COPY . .
 RUN npm run build
 
 # Stage 2: Serve with Nginx
-FROM nginx:latest
+FROM nginx:alpine
 COPY --from=build /app/build /usr/share/nginx/html
+COPY default.conf /etc/nginx/conf.d/default.conf
+RUN rm /etc/nginx/conf.d/default.conf.default 2>/dev/null || true
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
