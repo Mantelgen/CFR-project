@@ -79,7 +79,7 @@
       },
       "targets": [
         {
-          "expr": "rate({job=\"docker\", container=\"nginx-lb\"} [1m])",
+          "expr": "rate({container=\"nginx-lb\"} [1m])",
           "refId": "A"
         }
       ],
@@ -129,7 +129,7 @@
       "pluginVersion": "9.0.0",
       "targets": [
         {
-          "expr": "count_over_time({job=\"docker\", container=\"nginx-lb\"} [5m])",
+          "expr": "count_over_time({container=\"nginx-lb\"} [5m])",
           "refId": "A",
           "legendFormat": "Total Logs"
         }
@@ -175,7 +175,7 @@
       },
       "targets": [
         {
-          "expr": "sum by (status) (count_over_time({job=\"docker\", container=\"nginx-lb\"} | pattern `<ip> - - <_> \"<method> <uri> <_>\" <status> <size> <_>` [5m]))",
+          "expr": "sum by (status) (count_over_time({container=\"nginx-lb\"} | pattern `<ip> - - <_> \"<method> <uri> <_>\" <status> <size> <_>` [5m]))",
           "refId": "A",
           "legendFormat": "{{status}}"
         }
@@ -204,7 +204,7 @@
       "pluginVersion": "9.0.0",
       "targets": [
         {
-          "expr": "topk(10, sum by (uri) (count_over_time({job=\"docker\", container=\"nginx-lb\"} | pattern `<ip> - - <_> \"<method> <uri> <_>\" <status> <size> <_>` [5m])))",
+          "expr": "topk(10, sum by (uri) (count_over_time({container=\"nginx-lb\"} | pattern `<ip> - - <_> \"<method> <uri> <_>\" <status> <size> <_>` [5m])))",
           "refId": "A",
           "legendFormat": "{{uri}}"
         }
@@ -326,7 +326,7 @@
       },
       "targets": [
         {
-          "expr": "sum by (status) (rate({job=\"docker\", container=\"nginx-lb\"} | pattern `<ip> - - <_> \"<method> <uri> <_>\" <status> <size> <_>` [1m]))",
+          "expr": "sum by (status) (rate({container=\"nginx-lb\"} | pattern `<ip> - - <_> \"<method> <uri> <_>\" <status> <size> <_>` [1m]))",
           "refId": "A",
           "legendFormat": "{{status}}"
         }
@@ -355,7 +355,7 @@
       },
       "targets": [
         {
-          "expr": "{job=\"docker\", container=\"nginx-lb\"} |~ \"(?i)(error|warn)\"",
+          "expr": "{container=\"nginx-lb\"} |~ \"(?i)(error|warn)\"",
           "refId": "A"
         }
       ],
@@ -383,7 +383,7 @@
       "pluginVersion": "9.0.0",
       "targets": [
         {
-          "expr": "topk(10, sum by (ip) (count_over_time({job=\"docker\", container=\"nginx-lb\"} | pattern `<ip> - - <_>` [5m])))",
+          "expr": "topk(10, sum by (ip) (count_over_time({container=\"nginx-lb\"} | pattern `<ip> - - <_>` [5m])))",
           "refId": "A",
           "legendFormat": "{{ip}}"
         }
@@ -459,7 +459,7 @@
       },
       "targets": [
         {
-          "expr": "rate({job=\"docker\"} [1m])",
+          "expr": "rate({container=~\".+\"} [1m])",
           "refId": "A",
           "legendFormat": "{{container}}"
         }
@@ -488,7 +488,7 @@
       },
       "targets": [
         {
-          "expr": "{job=\"docker\"}",
+          "expr": "{container=~\".+\"}",
           "refId": "A"
         }
       ],
@@ -572,7 +572,7 @@
       },
       "targets": [
         {
-          "expr": "{service=\"backend\"} |~ \"(?i)(error|exception|fail)\"",
+          "expr": "{container=~\"cfr-project-backend.*\"} |~ \"(?i)(error|exception|fail)\"",
           "refId": "A"
         }
       ],
@@ -600,7 +600,7 @@
       },
       "targets": [
         {
-          "expr": "{service=\"frontend\"} |~ \"(?i)(error|exception|fail)\"",
+          "expr": "{container=\"cfr-frontend\"} |~ \"(?i)(error|exception|fail)\"",
           "refId": "A"
         }
       ],
