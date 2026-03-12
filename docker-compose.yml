@@ -59,6 +59,8 @@ services:
   migration:
     build:
       context: ./liquibase
+    container_name: cfr-project-migration-1
+    restart: "no"
     depends_on:
       db-master:
         condition: service_healthy

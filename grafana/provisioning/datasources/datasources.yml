@@ -17,3 +17,18 @@ datasources:
     editable: true
     jsonData:
       maxLines: 1000
+
+  - name: MySQL
+    type: mysql
+    access: proxy
+    url: db-master:3306
+    database: cfr_db
+    user: root
+    editable: true
+    secureJsonData:
+      password: root_password
+    jsonData:
+      maxOpenConns: 0
+      maxIdleConns: 2
+      connMaxLifetime: 14400
+
