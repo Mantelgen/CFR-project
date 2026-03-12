@@ -23,6 +23,12 @@ query_range:
         enabled: true
         max_size_mb: 100
 
+frontend:
+  scheduler_address: ""
+
+querier:
+  max_concurrent: 4
+
 schema_config:
   configs:
     - from: 2020-10-24

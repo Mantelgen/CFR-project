@@ -337,10 +337,38 @@
     {
       "datasource": "Loki",
       "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 24
+      },
+      "id": 13,
+      "options": {
+        "dedupStrategy": "none",
+        "enableLogDetails": true,
+        "prettifyLogMessage": false,
+        "showCommonLabels": false,
+        "showLabels": false,
+        "showTime": true,
+        "sortOrder": "Descending",
+        "wrapLogMessage": false
+      },
+      "targets": [
+        {
+          "expr": "{container=\"nginx-lb\"}",
+          "refId": "A"
+        }
+      ],
+      "title": "All Nginx Access Logs (Web Traffic)",
+      "type": "logs"
+    },
+    {
+      "datasource": "Loki",
+      "gridPos": {
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 24
+        "y": 34
       },
       "id": 6,
       "options": {
@@ -368,7 +396,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 24
+        "y": 34
       },
       "id": 7,
       "options": {
@@ -444,7 +472,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 32
+        "y": 42
       },
       "id": 8,
       "options": {
@@ -473,7 +501,7 @@
         "h": 10,
         "w": 24,
         "x": 0,
-        "y": 40
+        "y": 50
       },
       "id": 9,
       "options": {
@@ -524,7 +552,7 @@
         "h": 6,
         "w": 24,
         "x": 0,
-        "y": 50
+        "y": 60
       },
       "id": 10,
       "options": {
@@ -557,7 +585,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 56
+        "y": 66
       },
       "id": 11,
       "options": {
@@ -585,7 +613,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 56
+        "y": 66
       },
       "id": 12,
       "options": {
