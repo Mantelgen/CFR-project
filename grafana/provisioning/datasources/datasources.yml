@@ -31,4 +31,5 @@ datasources:
       maxOpenConns: 0
       maxIdleConns: 2
       connMaxLifetime: 14400
+      allowCleartextPasswords: true
 
