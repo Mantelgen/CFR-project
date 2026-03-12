@@ -9,7 +9,7 @@ clients:
   - url: http://loki:3100/loki/api/v1/push
 
 scrape_configs:
-  # Docker container logs
+  # Docker container logs (includes all containers including nginx)
   - job_name: docker
     docker_sd_configs:
       - host: unix:///var/run/docker.sock
@@ -22,23 +22,3 @@ scrape_configs:
         target_label: 'stream'
       - source_labels: ['__meta_docker_container_label_com_docker_compose_service']
         target_label: 'service'
-
-  # Nginx access logs
-  - job_name: nginx-access
-    static_configs:
-      - targets:
-          - localhost
-        labels:
-          job: nginx
-          log_type: access
-          __path__: /var/log/nginx/access.log
-
-  # Nginx error logs
-  - job_name: nginx-error
-    static_configs:
-      - targets:
-          - localhost
-        labels:
-          job: nginx
-          log_type: error
-          __path__: /var/log/nginx/error.log

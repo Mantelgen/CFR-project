@@ -79,11 +79,11 @@
       },
       "targets": [
         {
-          "expr": "rate({job=\"nginx\", log_type=\"access\"} [1m])",
+          "expr": "rate({job=\"docker\", container=\"nginx-lb\"} [1m])",
           "refId": "A"
         }
       ],
-      "title": "Nginx Request Rate",
+      "title": "Nginx Log Rate",
       "type": "timeseries"
     },
     {
@@ -129,12 +129,12 @@
       "pluginVersion": "9.0.0",
       "targets": [
         {
-          "expr": "count_over_time({job=\"nginx\", log_type=\"access\"} [5m])",
+          "expr": "count_over_time({job=\"docker\", container=\"nginx-lb\"} [5m])",
           "refId": "A",
-          "legendFormat": "Total Requests"
+          "legendFormat": "Total Logs"
         }
       ],
-      "title": "Total Requests (5m)",
+      "title": "Nginx Total Logs (5m)",
       "type": "gauge"
     },
     {
@@ -175,7 +175,7 @@
       },
       "targets": [
         {
-          "expr": "sum by (status) (count_over_time({job=\"nginx\", log_type=\"access\"} | pattern `<ip> - - <_> \"<method> <uri> <_>\" <status> <size> <_>` [5m]))",
+          "expr": "sum by (status) (count_over_time({job=\"docker\", container=\"nginx-lb\"} | pattern `<ip> - - <_> \"<method> <uri> <_>\" <status> <size> <_>` [5m]))",
           "refId": "A",
           "legendFormat": "{{status}}"
         }
@@ -204,7 +204,7 @@
       "pluginVersion": "9.0.0",
       "targets": [
         {
-          "expr": "topk(10, sum by (uri) (count_over_time({job=\"nginx\", log_type=\"access\"} | pattern `<ip> - - <_> \"<method> <uri> <_>\" <status> <size> <_>` [5m])))",
+          "expr": "topk(10, sum by (uri) (count_over_time({job=\"docker\", container=\"nginx-lb\"} | pattern `<ip> - - <_> \"<method> <uri> <_>\" <status> <size> <_>` [5m])))",
           "refId": "A",
           "legendFormat": "{{uri}}"
         }
@@ -326,7 +326,7 @@
       },
       "targets": [
         {
-          "expr": "sum by (status) (rate({job=\"nginx\", log_type=\"access\"} | pattern `<ip> - - <_> \"<method> <uri> <_>\" <status> <size> <_>` [1m]))",
+          "expr": "sum by (status) (rate({job=\"docker\", container=\"nginx-lb\"} | pattern `<ip> - - <_> \"<method> <uri> <_>\" <status> <size> <_>` [1m]))",
           "refId": "A",
           "legendFormat": "{{status}}"
         }
@@ -355,11 +355,11 @@
       },
       "targets": [
         {
-          "expr": "{job=\"nginx\", log_type=\"error\"}",
+          "expr": "{job=\"docker\", container=\"nginx-lb\"} |~ \"(?i)(error|warn)\"",
           "refId": "A"
         }
       ],
-      "title": "Nginx Error Logs",
+      "title": "Nginx Error/Warning Logs",
       "type": "logs"
     },
     {
@@ -383,7 +383,7 @@
       "pluginVersion": "9.0.0",
       "targets": [
         {
-          "expr": "topk(10, sum by (ip) (count_over_time({job=\"nginx\", log_type=\"access\"} | pattern `<ip> - - <_>` [5m])))",
+          "expr": "topk(10, sum by (ip) (count_over_time({job=\"docker\", container=\"nginx-lb\"} | pattern `<ip> - - <_>` [5m])))",
           "refId": "A",
           "legendFormat": "{{ip}}"
         }
