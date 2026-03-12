@@ -87,12 +87,12 @@
       },
       "targets": [
         {
-          "expr": "rate({container=\"nginx-lb\"} |~ \"/api/\" [1m])",
+          "expr": "rate({container=\"nginx-lb\"} | regexp \"\\\"(GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS) /api/\" [1m])",
           "refId": "A",
           "legendFormat": "API Requests"
         },
         {
-          "expr": "rate({container=\"nginx-lb\"} !~ \"/api/\" !~ \"/health\" !~ \"/stub_status\" [1m])",
+          "expr": "rate({container=\"nginx-lb\"} | regexp \"\\\"(GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS) /(?!api/|health|stub_status)\" [1m])",
           "refId": "B",
           "legendFormat": "Frontend Requests"
         }
@@ -185,7 +185,7 @@
       },
       "targets": [
         {
-          "expr": "sum by (status) (count_over_time({container=\"nginx-lb\"} |~ \"/api/\" | regexp \"(?P<status>\\\\d{3})\" [5m]))",
+          "expr": "sum by (status) (count_over_time({container=\"nginx-lb\"} | regexp \"\\\"(GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS) /api/[^\\\\s]*\\\" (?P<status>\\\\d{3})\" [5m]))",
           "refId": "A",
           "legendFormat": "{{status}}"
         }
@@ -238,7 +238,7 @@
       "pluginVersion": "9.0.0",
       "targets": [
         {
-          "expr": "count_over_time({container=\"nginx-lb\"} |~ \"/api/\" |~ \"5\\\\d{2}\" [5m])",
+          "expr": "count_over_time({container=\"nginx-lb\"} | regexp \"\\\"(GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS) /api/[^\\\\s]*\\\" (?P<status>5\\\\d{2})\" [5m])",
           "refId": "A",
           "legendFormat": "API Errors (5xx)"
         }
@@ -267,7 +267,7 @@
       "pluginVersion": "9.0.0",
       "targets": [
         {
-          "expr": "{container=\"nginx-lb\"} |~ \"/api/\" | regexp \"(?P<method>GET|POST|PUT|DELETE|PATCH) (?P<endpoint>/api/[^\\\\s?]+)\" | line_format \"{{.endpoint}}\"",
+          "expr": "{container=\"nginx-lb\"} | regexp \"\\\"(?P<method>GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS) (?P<endpoint>/api/[^\\\\s?]+)\" | line_format \"{{.endpoint}}\"",
           "refId": "A"
         }
       ],
@@ -352,7 +352,7 @@
       },
       "targets": [
         {
-          "expr": "sum by (method) (count_over_time({container=\"nginx-lb\"} |~ \"/api/\" | regexp \"request_method=(?P<method>GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS)\" [5m]))",
+          "expr": "sum by (method) (count_over_time({container=\"nginx-lb\"} | regexp \"\\\"(?P<method>GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS) /api/\" [5m]))",
           "refId": "A",
           "legendFormat": "{{method}}"
         }
@@ -403,7 +403,7 @@
       "pluginVersion": "9.0.0",
       "targets": [
         {
-          "expr": "count_over_time({container=\"nginx-lb\"} |~ \"/api/\" [5m])",
+          "expr": "count_over_time({container=\"nginx-lb\"} | regexp \"\\\"(GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS) /api/\" [5m])",
           "refId": "A",
           "legendFormat": "Total API Calls"
         }
@@ -521,7 +521,7 @@
       },
       "targets": [
         {
-          "expr": "sum by (status) (rate({container=\"nginx-lb\"} |~ \"/api/\" | regexp \"(?P<status>\\\\d{3})\" [1m]))",
+          "expr": "sum by (status) (rate({container=\"nginx-lb\"} | regexp \"\\\"(GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS) /api/[^\\\\s]*\\\" (?P<status>\\\\d{3})\" [1m]))",
           "refId": "A",
           "legendFormat": "{{status}}"
         }
@@ -550,7 +550,7 @@
       },
       "targets": [
         {
-          "expr": "{container=\"nginx-lb\"} |~ \"/api/\"",
+          "expr": "{container=\"nginx-lb\"} | regexp \"\\\"(GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS) /api/\"",
           "refId": "A"
         }
       ],
@@ -578,7 +578,7 @@
       },
       "targets": [
         {
-          "expr": "{container=\"nginx-lb\"} |~ \"5\\\\d{2}\" |~ \"/api/\"",
+          "expr": "{container=\"nginx-lb\"} | regexp \"\\\"(GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS) /api/[^\\\\s]*\\\" (?P<status>5\\\\d{2})\"",
           "refId": "A"
         }
       ],
@@ -606,7 +606,7 @@
       "pluginVersion": "9.0.0",
       "targets": [
         {
-          "expr": "{container=\"nginx-lb\"} |~ \"/api/\" | regexp \"(?P<ip>[\\\\d.]+) .* \\\"(?P<method>\\\\w+) (?P<endpoint>/api/[^\\\\s?]+)[^\\\"]*\\\" (?P<status>\\\\d{3})\" | line_format \"{{.ip}} | {{.method}} | {{.endpoint}} | {{.status}}\"",
+          "expr": "{container=\"nginx-lb\"} | regexp \"(?P<ip>[\\\\d.]+) .* \\\"(?P<method>GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS) (?P<endpoint>/api/[^\\\\s?]+)[^\\\"]*\\\" (?P<status>\\\\d{3})\" | line_format \"{{.ip}} | {{.method}} | {{.endpoint}} | {{.status}}\"",
           "refId": "A"
         }
       ],

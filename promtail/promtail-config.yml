@@ -22,3 +22,35 @@ scrape_configs:
         target_label: 'stream'
       - source_labels: ['__meta_docker_container_label_com_docker_compose_service']
         target_label: 'service'
+
+  # Nginx access logs - structured web access logging
+  - job_name: nginx-access
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: nginx
+          __path__: /var/log/nginx/access.log
+          type: access
+    pipeline_stages:
+      - regex:
+          expression: '^(?P<remote_addr>[\d.]+) - (?P<remote_user>[^\s]+) \[(?P<time_local>[^\]]+)\] "(?P<request_method>\w+) (?P<request_uri>[^\s]+) [^"]*" (?P<status>\d{3}) (?P<body_bytes_sent>\d+) "[^"]*" "[^"]*" request_time=(?P<request_time>[\d.]+) upstream_response_time=(?P<upstream_response_time>[\d.]+|-) upstream_addr=(?P<upstream_addr>[^\s]+)'
+      - labels:
+          remote_addr:
+          status:
+          request_method:
+          request_uri:
+      - timestamp:
+          source: time_local
+          format: 02/Jan/2006:15:04:05 -0700
+
+  # Nginx error logs
+  - job_name: nginx-error
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: nginx
+          __path__: /var/log/nginx/error.log
+          type: error
+          level: error
