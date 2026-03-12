@@ -223,10 +223,7 @@ services:
     container_name: mysql-exporter
     restart: unless-stopped
     environment:
-      - DATA_SOURCE_NAME=root:root_password@(db-master:3306)/
-    command:
-      - --collect.info_schema.tables
-      - --collect.info_schema.innodb_metrics
+      DATA_SOURCE_NAME: "root:root_password@tcp(db-master:3306)/"
     ports:
       - "9104:9104"
     depends_on:
