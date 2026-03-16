@@ -43,8 +43,11 @@ public class UserService implements UserDetailsService {
         
         User saved = userRepository.save(user);
 
-        // Send confirmation email
-        mailService.sendAccountConfirmationEmail(email, firstName, user.getConfirmationToken());
+        // Do not block account creation on SMTP issues.
+        try {
+            mailService.sendAccountConfirmationEmail(email, firstName, user.getConfirmationToken());
+        } catch (Exception ignored) {
+        }
 
         return saved;
     }

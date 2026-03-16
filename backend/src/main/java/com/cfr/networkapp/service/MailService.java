@@ -1,6 +1,7 @@
 package com.cfr.networkapp.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -10,6 +11,16 @@ public class MailService {
 
     @Autowired
     private JavaMailSender mailSender;
+
+    @Value("${app.public-base-url:http://cfr.local}")
+    private String publicBaseUrl;
+
+    private String buildPublicUrl(String path, String token) {
+        String normalizedBase = publicBaseUrl.endsWith("/")
+                ? publicBaseUrl.substring(0, publicBaseUrl.length() - 1)
+                : publicBaseUrl;
+        return normalizedBase + path + "?token=" + token;
+    }
 
     public void sendTestEmail(String to) {
         SimpleMailMessage message = new SimpleMailMessage();
@@ -24,13 +35,14 @@ public class MailService {
 
     public void sendAccountConfirmationEmail(String to, String firstName, String confirmationToken) {
         SimpleMailMessage message = new SimpleMailMessage();
+        String confirmationUrl = buildPublicUrl("/confirm-email", confirmationToken);
 
         message.setFrom("noreply@cfr.local");
         message.setTo(to);
         message.setSubject("Confirm your CFR Account");
         message.setText("Hello " + firstName + ",\n\n" +
                 "Thank you for registering with CFR. Please click the link below to confirm your email address:\n\n" +
-                "http://localhost:3000/confirm-email?token=" + confirmationToken + "\n\n" +
+            confirmationUrl + "\n\n" +
                 "If you did not register, please ignore this email.\n\n" +
                 "Best regards,\nCFR Team");
 
@@ -39,6 +51,7 @@ public class MailService {
 
     public void sendReservationConfirmationEmail(String to, String firstName, String trainNumber, Integer numberOfSeats, String confirmationToken) {
         SimpleMailMessage message = new SimpleMailMessage();
+        String confirmationUrl = buildPublicUrl("/confirm-reservation", confirmationToken);
 
         message.setFrom("noreply@cfr.local");
         message.setTo(to);
@@ -46,7 +59,7 @@ public class MailService {
         message.setText("Hello " + firstName + ",\n\n" +
                 "You have successfully made a reservation for train " + trainNumber + " (" + numberOfSeats + " seat(s)).\n\n" +
                 "Please click the link below to confirm your reservation:\n\n" +
-                "http://localhost:3000/confirm-reservation?token=" + confirmationToken + "\n\n" +
+            confirmationUrl + "\n\n" +
                 "If you did not make this reservation, please ignore this email.\n\n" +
                 "Best regards,\nCFR Team");
 
