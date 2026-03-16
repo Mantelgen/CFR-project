@@ -7,14 +7,23 @@
 
     <changeSet id="1" author="yourname">
         <createTable tableName="trains">
+
             <column name="id" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="train_number" type="VARCHAR(255)">
+
+            <column name="train_number" type="VARCHAR(20)">
                 <constraints nullable="false"/>
             </column>
-            <column name="departure_city" type="VARCHAR(255)"/>
-            <column name="arrival_city" type="VARCHAR(255)"/>
+
+            <column name="departure_station_id" type="BIGINT"/>
+
+            <column name="arrival_station_id" type="BIGINT"/>
+
+            <column name="departure_time" type="TIME"/>
+
+            <column name="arrival_time" type="TIME"/>
+
         </createTable>
     </changeSet>
 

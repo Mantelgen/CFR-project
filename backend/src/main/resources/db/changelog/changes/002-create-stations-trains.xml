@@ -24,35 +24,10 @@
     </changeSet>
 
 
-    <!-- Trains table -->
-    <changeSet id="003-create-trains" author="cosmin">
-
-        <createTable tableName="trains">
-
-            <column name="id" type="BIGINT" autoIncrement="true">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-
-            <column name="train_number" type="VARCHAR(20)">
-                <constraints nullable="false"/>
-            </column>
-
-            <column name="departure_station_id" type="BIGINT"/>
-
-            <column name="arrival_station_id" type="BIGINT"/>
-
-            <column name="departure_time" type="TIME"/>
-
-            <column name="arrival_time" type="TIME"/>
-
-        </createTable>
-
-    </changeSet>
-
 
     <!-- Insert stations -->
 
-    <changeSet id="004-insert-stations" author="cosmin">
+    <changeSet id="003-insert-stations" author="cosmin">
 
         <insert tableName="stations">
             <column name="name" value="Cluj"/>
@@ -71,7 +46,7 @@
 
     <!-- Insert trains -->
 
-    <changeSet id="005-insert-trains" author="cosmin">
+    <changeSet id="004-insert-trains" author="cosmin">
 
         <insert tableName="trains">
             <column name="train_number" value="IR1745"/>
