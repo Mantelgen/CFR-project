@@ -19,45 +19,22 @@ public class SecurityConfig {
 
     	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    		http.csrf(AbstractHttpConfigurer::disable)
+        	    .authorizeHttpRequests(auth -> auth
+            	    .requestMatchers("/api/status").permitAll()
+            	    .requestMatchers("/api/info").permitAll()
+            	    .requestMatchers("/api/mail/**").permitAll()
+                    .requestMatchers("/login").permitAll()
+            	    .anyRequest().authenticated()
+        	    )
+        	    .formLogin(form -> form
+    			.defaultSuccessUrl("/api/trains", true)
+   	 		.permitAll()
+			)
+        	    .logout(logout -> logout.permitAll());
 
-    http
-        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-        .csrf(AbstractHttpConfigurer::disable)
-
-        .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/api/status").permitAll()
-            .requestMatchers("/api/info").permitAll()
-            .requestMatchers("/api/auth/**").permitAll()
-			.requestMatchers("/api/trains/**").permitAll()
-            .requestMatchers("/login").permitAll()
-            .anyRequest().authenticated()
-        )
-
-        .formLogin(form -> form
-            .permitAll()
-        )
-
-        .logout(logout -> logout.permitAll());
-
-    return http.build();
-}
-	@Bean
-public CorsConfigurationSource corsConfigurationSource() {
-
-    CorsConfiguration configuration = new CorsConfiguration();
-
-    configuration.addAllowedOrigin("*");
-    configuration.addAllowedMethod("*");
-    configuration.addAllowedHeader("*");
-    configuration.setAllowCredentials(true);
-
-    UrlBasedCorsConfigurationSource source =
-            new UrlBasedCorsConfigurationSource();
-
-    source.registerCorsConfiguration("/**", configuration);
-
-    return source;
-}
+    		return http.build();
+	}
 
 	@Bean
 	public UserDetailsService users() {
