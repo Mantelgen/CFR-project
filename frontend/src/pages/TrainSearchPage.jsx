@@ -13,6 +13,14 @@ const TrainSearchPage = () => {
   const [numberOfSeats, setNumberOfSeats] = useState(1);
   const [isBooking, setIsBooking] = useState(false);
   const [bookingSuccess, setBookingSuccess] = useState(false);
+  const [isPaying, setIsPaying] = useState(false);
+  const [reservationId, setReservationId] = useState(null);
+  const [paymentForm, setPaymentForm] = useState({
+    cardHolder: "",
+    cardNumber: "",
+    expiry: "",
+    cvv: "",
+  });
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -64,21 +72,20 @@ const TrainSearchPage = () => {
 
   const submitBooking = async () => {
     if (!selectedTrain) return;
+    const userId = localStorage.getItem("userId");
 
     try {
       const response = await axios.post("/api/reservations/book", {
+        userId,
         trainId: selectedTrain.id,
         numberOfSeats: parseInt(numberOfSeats),
       });
 
       if (response.data.success) {
-        setBookingSuccess(true);
+        setReservationId(response.data.reservationId);
         setSelectedTrain(null);
         setIsBooking(false);
-        setTimeout(() => {
-          setBookingSuccess(false);
-          navigate("/my-reservations");
-        }, 3000);
+        setIsPaying(true);
       }
     } catch (err) {
       setError(
@@ -87,39 +94,76 @@ const TrainSearchPage = () => {
     }
   };
 
+  const confirmMockPayment = async () => {
+    if (!reservationId) {
+      setError("Missing reservation for payment.");
+      return;
+    }
+
+    if (!paymentForm.cardHolder || !paymentForm.cardNumber || !paymentForm.expiry || !paymentForm.cvv) {
+      setError("Please complete all payment fields.");
+      return;
+    }
+
+    try {
+      const response = await axios.post("/api/reservations/pay", {
+        userId: localStorage.getItem("userId"),
+        reservationId,
+        paymentMethod: "MOCK_CARD",
+      });
+
+      if (response.data.success) {
+        setIsPaying(false);
+        setBookingSuccess(true);
+        setPaymentForm({ cardHolder: "", cardNumber: "", expiry: "", cvv: "" });
+        setTimeout(() => {
+          setBookingSuccess(false);
+          navigate("/my-reservations");
+        }, 2800);
+      }
+    } catch (err) {
+      setError(err.response?.data?.error || "Payment failed. Please try again.");
+    }
+  };
+
   return (
-    <div className="container-fluid mt-4">
+    <div className="cfr-shell container-fluid mt-2">
       {/* Header */}
-      <div className="row mb-4">
-        <div className="col">
-          <h1>CFR Train Booking</h1>
-          <p className="text-muted">
+      <div className="cfr-hero p-4 mb-4">
+        <div className="row align-items-center">
+          <div className="col-md-8">
+            <h1 className="mb-1">CFR Train Booking</h1>
+            <p className="mb-0">
             Welcome, {localStorage.getItem("username")}
-          </p>
-        </div>
-        <div className="col text-end">
-          <button
-            className="btn btn-info me-2"
-            onClick={() => navigate("/my-reservations")}
-          >
-            My Reservations
-          </button>
-          <button
-            className="btn btn-secondary"
-            onClick={() => {
-              localStorage.clear();
-              navigate("/login");
-            }}
-          >
-            Logout
-          </button>
+            </p>
+          </div>
+          <div className="col-md-4 text-md-end mt-3 mt-md-0">
+            <button
+              className="btn btn-light me-2"
+              onClick={() => navigate("/my-reservations")}
+            >
+              My Reservations
+            </button>
+            <button
+              className="btn cfr-accent"
+              onClick={() => {
+                localStorage.clear();
+                navigate("/login");
+              }}
+            >
+              Logout
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Search Form */}
-      <div className="card mb-4">
+      <div className="card cfr-card mb-4">
         <div className="card-body">
-          <h5 className="card-title">Search Trains</h5>
+          <div className="d-flex align-items-center justify-content-between mb-2">
+            <h5 className="card-title mb-0">Search Trains</h5>
+            <span className="cfr-muted-chip">Live route finder</span>
+          </div>
           <form onSubmit={handleSearch}>
             <div className="row">
               <div className="col-md-4 mb-3">
@@ -151,7 +195,7 @@ const TrainSearchPage = () => {
               <div className="col-md-4 d-flex align-items-end">
                 <button
                   type="submit"
-                  className="btn btn-primary w-100"
+                  className="btn cfr-primary text-white w-100"
                   disabled={isLoading}
                 >
                   {isLoading ? "Searching..." : "Search"}
@@ -177,19 +221,19 @@ const TrainSearchPage = () => {
       {/* Booking Success Message */}
       {bookingSuccess && (
         <div className="alert alert-success alert-dismissible fade show">
-          Reservation created successfully! Redirecting to your reservations...
+          Payment confirmed. Your booking is confirmed and an email has been sent.
         </div>
       )}
 
       {/* Trains List */}
       {trains.length > 0 && (
-        <div className="card">
+        <div className="card cfr-card">
           <div className="card-body">
             <h5 className="card-title">
               Available Trains ({trains.length})
             </h5>
             <div className="table-responsive">
-              <table className="table table-hover">
+              <table className="table table-hover cfr-table">
                 <thead>
                   <tr>
                     <th>Train Number</th>
@@ -206,7 +250,7 @@ const TrainSearchPage = () => {
                       <td>{train.arrivalTime}</td>
                       <td>
                         <button
-                          className="btn btn-sm btn-success"
+                          className="btn btn-sm cfr-accent"
                           onClick={() => handleBook(train)}
                         >
                           Book Now
@@ -274,10 +318,80 @@ const TrainSearchPage = () => {
                 </button>
                 <button
                   type="button"
-                  className="btn btn-primary"
+                  className="btn cfr-primary text-white"
                   onClick={submitBooking}
                 >
                   Confirm Booking
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isPaying && (
+        <div className="modal d-block cfr-modal">
+          <div className="modal-dialog">
+            <div className="modal-content cfr-card">
+              <div className="modal-header">
+                <h5 className="modal-title">Mock Payment</h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => setIsPaying(false)}
+                ></button>
+              </div>
+              <div className="modal-body">
+                <p className="text-muted mb-3">Demo flow: enter any values and confirm payment.</p>
+                <div className="mb-3">
+                  <label className="form-label">Card Holder</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={paymentForm.cardHolder}
+                    onChange={(e) => setPaymentForm({ ...paymentForm, cardHolder: e.target.value })}
+                    placeholder="Name Surname"
+                  />
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">Card Number</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={paymentForm.cardNumber}
+                    onChange={(e) => setPaymentForm({ ...paymentForm, cardNumber: e.target.value })}
+                    placeholder="4242 4242 4242 4242"
+                  />
+                </div>
+                <div className="row">
+                  <div className="col-6 mb-3">
+                    <label className="form-label">Expiry</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={paymentForm.expiry}
+                      onChange={(e) => setPaymentForm({ ...paymentForm, expiry: e.target.value })}
+                      placeholder="MM/YY"
+                    />
+                  </div>
+                  <div className="col-6 mb-3">
+                    <label className="form-label">CVV</label>
+                    <input
+                      type="password"
+                      className="form-control"
+                      value={paymentForm.cvv}
+                      onChange={(e) => setPaymentForm({ ...paymentForm, cvv: e.target.value })}
+                      placeholder="123"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-outline-secondary" onClick={() => setIsPaying(false)}>
+                  Close
+                </button>
+                <button type="button" className="btn cfr-primary text-white" onClick={confirmMockPayment}>
+                  Confirm Payment
                 </button>
               </div>
             </div>

@@ -1,0 +1,61 @@
+:root {
+  --cfr-ink: #1b1f3b;
+  --cfr-sky: #d9f0ff;
+  --cfr-blue: #1f6feb;
+  --cfr-gold: #f5b700;
+  --cfr-teal: #16a6b6;
+  --cfr-soft: #f5f8ff;
+}
+
+body {
+  background: radial-gradient(circle at top left, #eef7ff 0%, #f9fcff 45%, #fff8ec 100%);
+  color: var(--cfr-ink);
+}
+
+.cfr-shell {
+  min-height: 100vh;
+  padding: 1.5rem;
+}
+
+.cfr-hero {
+  background: linear-gradient(120deg, #1f6feb 0%, #16a6b6 55%, #f5b700 100%);
+  color: #fff;
+  border-radius: 16px;
+  box-shadow: 0 14px 40px rgba(31, 111, 235, 0.25);
+}
+
+.cfr-card {
+  border: 0;
+  border-radius: 14px;
+  box-shadow: 0 10px 26px rgba(27, 31, 59, 0.08);
+}
+
+.cfr-primary {
+  background: linear-gradient(120deg, #1f6feb 0%, #2ea0ff 100%);
+  border: 0;
+}
+
+.cfr-accent {
+  background: linear-gradient(120deg, #f5b700 0%, #f29100 100%);
+  border: 0;
+  color: #1b1f3b;
+}
+
+.cfr-muted-chip {
+  background: #e6f4ff;
+  color: #0f4f9f;
+  border-radius: 999px;
+  padding: 0.25rem 0.65rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.cfr-table thead th {
+  background: #edf5ff;
+  color: #15407e;
+  border-bottom: 0;
+}
+
+.cfr-modal {
+  background-color: rgba(20, 30, 65, 0.5);
+}

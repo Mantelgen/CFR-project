@@ -3,6 +3,7 @@ import TrainSearchPage from "./pages/TrainSearchPage";
 import AuthPage from "./pages/AuthPage";
 import MyReservationsPage from "./pages/MyReservationsPage";
 import ConfirmationPage from "./pages/ConfirmationPage";
+import "./styles/app-theme.css";
 
 function App() {
   return (

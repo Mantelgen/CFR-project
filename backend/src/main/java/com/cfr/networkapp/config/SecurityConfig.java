@@ -29,6 +29,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/mail/**").permitAll()
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/trains/search").permitAll()
+                .requestMatchers("/api/reservations/**").permitAll()
                 .requestMatchers("/login").permitAll()
                 .requestMatchers("/register").permitAll()
                 .requestMatchers("/").permitAll()

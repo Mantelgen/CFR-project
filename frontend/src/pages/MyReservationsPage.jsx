@@ -22,7 +22,9 @@ const MyReservationsPage = () => {
 
   const fetchReservations = async () => {
     try {
-      const response = await axios.get("/api/reservations/my-reservations");
+      const response = await axios.get("/api/reservations/my-reservations", {
+        params: { userId: localStorage.getItem("userId") },
+      });
       setReservations(response.data || []);
     } catch (err) {
       setError("Error fetching reservations. Please try again.");
@@ -35,7 +37,9 @@ const MyReservationsPage = () => {
     if (window.confirm("Are you sure you want to cancel this reservation?")) {
       setCancellingId(id);
       try {
-        await axios.delete(`/api/reservations/${id}`);
+        await axios.delete(`/api/reservations/${id}`, {
+          params: { userId: localStorage.getItem("userId") },
+        });
         setReservations(
           reservations.filter((reservation) => reservation.id !== id)
         );
@@ -60,28 +64,31 @@ const MyReservationsPage = () => {
   }
 
   return (
-    <div className="container-fluid mt-4">
+    <div className="cfr-shell container-fluid mt-2">
       {/* Header */}
-      <div className="row mb-4">
-        <div className="col">
-          <h1>My Reservations</h1>
-        </div>
-        <div className="col text-end">
-          <button
-            className="btn btn-primary me-2"
-            onClick={() => navigate("/search")}
-          >
-            Search More Trains
-          </button>
-          <button
-            className="btn btn-secondary"
-            onClick={() => {
-              localStorage.clear();
-              navigate("/login");
-            }}
-          >
-            Logout
-          </button>
+      <div className="cfr-hero p-4 mb-4">
+        <div className="row align-items-center">
+          <div className="col-md-8">
+            <h1 className="mb-1">My Reservations</h1>
+            <p className="mb-0">Track payment and booking confirmations</p>
+          </div>
+          <div className="col-md-4 text-md-end mt-3 mt-md-0">
+            <button
+              className="btn btn-light me-2"
+              onClick={() => navigate("/search")}
+            >
+              Search More Trains
+            </button>
+            <button
+              className="btn cfr-accent"
+              onClick={() => {
+                localStorage.clear();
+                navigate("/login");
+              }}
+            >
+              Logout
+            </button>
+          </div>
         </div>
       </div>
 
@@ -108,10 +115,10 @@ const MyReservationsPage = () => {
           </button>
         </div>
       ) : (
-        <div className="card">
+        <div className="card cfr-card">
           <div className="card-body">
             <div className="table-responsive">
-              <table className="table table-hover">
+              <table className="table table-hover cfr-table">
                 <thead>
                   <tr>
                     <th>Train Number</th>
@@ -134,6 +141,8 @@ const MyReservationsPage = () => {
                           className={`badge bg-${
                             reservation.status === "CONFIRMED"
                               ? "success"
+                              : reservation.status === "AWAITING_PAYMENT"
+                              ? "info"
                               : reservation.status === "PENDING"
                               ? "warning"
                               : "danger"

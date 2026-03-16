@@ -42,20 +42,9 @@ public class ReservationService {
 
         Reservation reservation = new Reservation(user, train, numberOfSeats);
         reservation.setConfirmationToken(UUID.randomUUID().toString());
-        reservation.setStatus("PENDING");
+        reservation.setStatus("AWAITING_PAYMENT");
 
-        Reservation saved = reservationRepository.save(reservation);
-
-        // Send confirmation email
-        mailService.sendReservationConfirmationEmail(
-            user.getEmail(),
-            user.getFirstName(),
-            train.getTrainNumber(),
-            numberOfSeats,
-            saved.getConfirmationToken()
-        );
-
-        return saved;
+        return reservationRepository.save(reservation);
     }
 
     public List<Reservation> getUserReservations(Long userId) {
@@ -76,9 +65,32 @@ public class ReservationService {
 
         Reservation saved = reservationRepository.save(reservation);
 
-        // Send confirmed email
-        Train train = saved.getTrain();
-        User user = saved.getUser();
+        sendConfirmedEmail(saved);
+
+        return saved;
+    }
+
+    public Reservation confirmPayment(Long reservationId) {
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new RuntimeException("Reservation not found"));
+
+        if ("CANCELLED".equalsIgnoreCase(reservation.getStatus())) {
+            throw new RuntimeException("Cannot pay for a cancelled reservation");
+        }
+
+        reservation.setIsConfirmed(true);
+        reservation.setStatus("CONFIRMED");
+        reservation.setConfirmationToken(null);
+
+        Reservation saved = reservationRepository.save(reservation);
+        sendConfirmedEmail(saved);
+
+        return saved;
+    }
+
+    private void sendConfirmedEmail(Reservation reservation) {
+        Train train = reservation.getTrain();
+        User user = reservation.getUser();
         Station departureStation = stationRepository.findById(train.getDepartureStationId())
                 .orElse(null);
         Station arrivalStation = stationRepository.findById(train.getArrivalStationId())
@@ -86,16 +98,14 @@ public class ReservationService {
 
         if (departureStation != null && arrivalStation != null) {
             mailService.sendReservationConfirmedEmail(
-                user.getEmail(),
-                user.getFirstName(),
-                train.getTrainNumber(),
-                departureStation.getName(),
-                arrivalStation.getName(),
-                train.getDepartureTime().toString()
+                    user.getEmail(),
+                    user.getFirstName(),
+                    train.getTrainNumber(),
+                    departureStation.getName(),
+                    arrivalStation.getName(),
+                    train.getDepartureTime().toString()
             );
         }
-
-        return saved;
     }
 
     public Reservation getReservationById(Long id) {

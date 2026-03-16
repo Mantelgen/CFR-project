@@ -24,19 +24,18 @@ public class ReservationController {
     public ResponseEntity<?> bookReservation(@RequestBody Map<String, Object> request) {
         try {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            if (auth == null || !auth.isAuthenticated()) {
+            Long userId = resolveUserId(auth, request.get("userId"));
+            if (userId == null) {
                 return ResponseEntity.status(401).body(Map.of("error", "User not authenticated"));
             }
-
-            User user = (User) auth.getPrincipal();
             Long trainId = Long.parseLong(request.get("trainId").toString());
             Integer numberOfSeats = Integer.parseInt(request.get("numberOfSeats").toString());
 
-            Reservation reservation = reservationService.createReservation(user.getId(), trainId, numberOfSeats);
+            Reservation reservation = reservationService.createReservation(userId, trainId, numberOfSeats);
 
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
-            response.put("message", "Reservation created. Please check your email to confirm.");
+            response.put("message", "Reservation created. Please complete payment to confirm booking.");
             response.put("reservationId", reservation.getId());
             response.put("confirmationToken", reservation.getConfirmationToken());
 
@@ -50,15 +49,15 @@ public class ReservationController {
     }
 
     @GetMapping("/my-reservations")
-    public ResponseEntity<?> getMyReservations() {
+    public ResponseEntity<?> getMyReservations(@RequestParam(required = false) Long userId) {
         try {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            if (auth == null || !auth.isAuthenticated()) {
+            Long resolvedUserId = resolveUserId(auth, userId);
+            if (resolvedUserId == null) {
                 return ResponseEntity.status(401).body(Map.of("error", "User not authenticated"));
             }
 
-            User user = (User) auth.getPrincipal();
-            List<Reservation> reservations = reservationService.getUserReservations(user.getId());
+            List<Reservation> reservations = reservationService.getUserReservations(resolvedUserId);
 
             return ResponseEntity.ok(reservations);
         } catch (Exception e) {
@@ -88,9 +87,51 @@ public class ReservationController {
         }
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> cancelReservation(@PathVariable Long id) {
+    @PostMapping("/pay")
+    public ResponseEntity<?> confirmPayment(@RequestBody Map<String, Object> request) {
         try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            Long userId = resolveUserId(auth, request.get("userId"));
+            if (userId == null) {
+                return ResponseEntity.status(401).body(Map.of("error", "User not authenticated"));
+            }
+
+            Long reservationId = Long.parseLong(request.get("reservationId").toString());
+            Reservation existing = reservationService.getReservationById(reservationId);
+            if (existing.getUser() == null || !userId.equals(existing.getUser().getId())) {
+                return ResponseEntity.status(403).body(Map.of("error", "Reservation does not belong to current user"));
+            }
+            Reservation reservation = reservationService.confirmPayment(reservationId);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "Payment confirmed. Your booking confirmation email has been sent.");
+            response.put("reservationId", reservation.getId());
+            response.put("status", reservation.getStatus());
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("success", "false");
+            error.put("error", e.getMessage());
+            return ResponseEntity.badRequest().body(error);
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> cancelReservation(@PathVariable Long id, @RequestParam(required = false) Long userId) {
+        try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            Long resolvedUserId = resolveUserId(auth, userId);
+            if (resolvedUserId == null) {
+                return ResponseEntity.status(401).body(Map.of("error", "User not authenticated"));
+            }
+
+            Reservation existing = reservationService.getReservationById(id);
+            if (existing.getUser() == null || !resolvedUserId.equals(existing.getUser().getId())) {
+                return ResponseEntity.status(403).body(Map.of("error", "Reservation does not belong to current user"));
+            }
+
             reservationService.cancelReservation(id);
 
             Map<String, Object> response = new HashMap<>();
@@ -104,5 +145,19 @@ public class ReservationController {
             error.put("error", e.getMessage());
             return ResponseEntity.badRequest().body(error);
         }
+    }
+
+    private Long resolveUserId(Authentication auth, Object requestUserId) {
+        if (auth != null && auth.isAuthenticated() && auth.getPrincipal() instanceof User user) {
+            return user.getId();
+        }
+        if (requestUserId != null) {
+            try {
+                return Long.parseLong(requestUserId.toString());
+            } catch (NumberFormatException ignored) {
+                return null;
+            }
+        }
+        return null;
     }
 }
