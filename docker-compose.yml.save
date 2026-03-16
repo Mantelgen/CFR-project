@@ -261,17 +261,9 @@ services:
     networks:
       - cfr-network
 
-  redis:
-    image: redis:7
-    container_name: redis
-    restart: unless-stopped
-    ports:
-      - "6379:6379"
-    networks:
-      - cfr-network
-
 volumes:
-  db-master-data:
+ 
+ db-master-data:
   db-slave-data:
   nginx-logs:
   prometheus-data:
