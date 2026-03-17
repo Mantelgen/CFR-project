@@ -10,6 +10,10 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -23,7 +27,24 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable)
+        http
+            // Enable CSRF except for stateless endpoints
+            .csrf(csrf -> csrf
+                .ignoringRequestMatchers("/api/auth/**", "/api/info", "/api/status", "/api/mail/**")
+            )
+            // Enable CORS
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            // Secure headers
+            .headers(headers -> headers
+                .xssProtection(xss -> xss.block(true))
+                .frameOptions(frame -> frame.sameOrigin())
+                .httpStrictTransportSecurity(hsts -> hsts.includeSubDomains(true).maxAgeInSeconds(31536000))
+            )
+            // Session management
+            .sessionManagement(session -> session
+                .sessionFixation().migrateSession()
+            )
+            // Authorization
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/status").permitAll()
                 .requestMatchers("/api/info").permitAll()
@@ -31,10 +52,12 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/trains/search").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/trains", "/api/trains/**").permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/trains").permitAll()
-                .requestMatchers(HttpMethod.PUT, "/api/trains/**").permitAll()
-                .requestMatchers(HttpMethod.DELETE, "/api/trains/**").permitAll()
-                .requestMatchers("/api/reservations/**").permitAll()
+                // Only authenticated users can POST/PUT/DELETE trains
+                .requestMatchers(HttpMethod.POST, "/api/trains").authenticated()
+                .requestMatchers(HttpMethod.PUT, "/api/trains/**").authenticated()
+                .requestMatchers(HttpMethod.DELETE, "/api/trains/**").authenticated()
+                // Only authenticated users can access reservations
+                .requestMatchers("/api/reservations/**").authenticated()
                 .requestMatchers("/login").permitAll()
                 .requestMatchers("/register").permitAll()
                 .requestMatchers("/").permitAll()
@@ -51,6 +74,19 @@ public class SecurityConfig {
             );
 
         return http.build();
+    }
+
+    // CORS configuration allowing only your domain (adjust as needed)
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("https://cfr.local", "http://cfr.local"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowCredentials(true);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 }
 
