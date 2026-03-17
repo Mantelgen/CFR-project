@@ -6,8 +6,8 @@ import TopTaskbar from "../components/TopTaskbar";
 const MainDashboardPage = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
+  const [backendInfo, setBackendInfo] = useState("Connecting...");
   const [stats, setStats] = useState({
-    backendInfo: "Connecting...",
     totalTrains: 0,
     totalReservations: 0,
     confirmedReservations: 0,
@@ -15,62 +15,61 @@ const MainDashboardPage = () => {
   });
 
   const loadDashboard = async () => {
-      const nextStats = {
-        backendInfo: "Unavailable",
-        totalTrains: 0,
-        totalReservations: 0,
-        confirmedReservations: 0,
-        pendingReservations: 0,
-      };
-
-      try {
-        const infoResponse = await axios.get("/api/info", {
-          timeout: 6000,
-          params: { _ts: Date.now(), _rnd: Math.random().toString(36).slice(2) },
-          headers: {
-            "Cache-Control": "no-cache",
-            Pragma: "no-cache",
-          },
-        });
-        if (typeof infoResponse.data === "string") {
-          nextStats.backendInfo = infoResponse.data;
-        } else {
-          const host = infoResponse.data?.serverHost || "unknown-host";
-          const ip = infoResponse.data?.serverIp || "unknown-ip";
-          nextStats.backendInfo = `${host} (${ip})`;
-        }
-      } catch (error) {
-        nextStats.backendInfo = "Backend info unavailable";
+    setIsLoading(true);
+    // Fetch backend info identically to TrainSearchPage
+    try {
+      const response = await axios.get("/api/info", {
+        timeout: 6000,
+        params: { _ts: Date.now() },
+        headers: {
+          "Cache-Control": "no-cache",
+          Pragma: "no-cache",
+        },
+      });
+      if (typeof response.data === "string") {
+        setBackendInfo(response.data || "Unavailable");
+      } else {
+        const host = response.data?.serverHost || "unknown-host";
+        const ip = response.data?.serverIp || "unknown-ip";
+        setBackendInfo(`${host} (${ip})`);
       }
+    } catch (err) {
+      setBackendInfo("Backend info unavailable");
+    }
 
-      try {
-        const trainResponse = await axios.get("/api/trains", { timeout: 8000 });
-        nextStats.totalTrains = Array.isArray(trainResponse.data) ? trainResponse.data.length : 0;
-      } catch (error) {
-        nextStats.totalTrains = 0;
-      }
-
-      const userId = localStorage.getItem("userId");
-      if (userId) {
-        try {
-          const reservationResponse = await axios.get("/api/reservations/my-reservations", {
-            params: { userId },
-            timeout: 8000,
-          });
-          const reservations = Array.isArray(reservationResponse.data) ? reservationResponse.data : [];
-          nextStats.totalReservations = reservations.length;
-          nextStats.confirmedReservations = reservations.filter((r) => r.status === "CONFIRMED").length;
-          nextStats.pendingReservations = reservations.filter(
-            (r) => r.status === "PENDING" || r.status === "AWAITING_PAYMENT"
-          ).length;
-        } catch (error) {
-          nextStats.totalReservations = 0;
-        }
-      }
-
-      setStats(nextStats);
-      setIsLoading(false);
+    // Fetch other dashboard stats
+    const nextStats = {
+      totalTrains: 0,
+      totalReservations: 0,
+      confirmedReservations: 0,
+      pendingReservations: 0,
     };
+    try {
+      const trainResponse = await axios.get("/api/trains", { timeout: 8000 });
+      nextStats.totalTrains = Array.isArray(trainResponse.data) ? trainResponse.data.length : 0;
+    } catch (error) {
+      nextStats.totalTrains = 0;
+    }
+    const userId = localStorage.getItem("userId");
+    if (userId) {
+      try {
+        const reservationResponse = await axios.get("/api/reservations/my-reservations", {
+          params: { userId },
+          timeout: 8000,
+        });
+        const reservations = Array.isArray(reservationResponse.data) ? reservationResponse.data : [];
+        nextStats.totalReservations = reservations.length;
+        nextStats.confirmedReservations = reservations.filter((r) => r.status === "CONFIRMED").length;
+        nextStats.pendingReservations = reservations.filter(
+          (r) => r.status === "PENDING" || r.status === "AWAITING_PAYMENT"
+        ).length;
+      } catch (error) {
+        nextStats.totalReservations = 0;
+      }
+    }
+    setStats(nextStats);
+    setIsLoading(false);
+  };
 
 
   useEffect(() => {
@@ -123,7 +122,7 @@ const MainDashboardPage = () => {
                     )}
                   </button>
                 </div>
-                <p className="mb-1">{stats.backendInfo}</p>
+                <p className="mb-1">{backendInfo}</p>
                 <small className="text-white-50">
                   {isLoading ? "Refreshing dashboard metrics..." : "Dashboard updated just now."}
                 </small>
