@@ -1,7 +1,10 @@
 package com.cfr.networkapp.controller;
 
 import com.cfr.networkapp.model.Train;
+import com.cfr.networkapp.model.Station;
 import com.cfr.networkapp.service.TrainService;
+import com.cfr.networkapp.repository.StationRepository;
+import com.cfr.networkapp.dto.TrainDetailsDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,9 +17,11 @@ import java.util.Optional;
 public class TrainController {
 
     private final TrainService trainService;
+    private final StationRepository stationRepository;
 
-    public TrainController(TrainService trainService) {
+    public TrainController(TrainService trainService, StationRepository stationRepository) {
         this.trainService = trainService;
+        this.stationRepository = stationRepository;
     }
 
     @GetMapping("/search")
@@ -32,12 +37,27 @@ public class TrainController {
         return trainService.getAllTrains();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Train> getTrainById(@PathVariable Long id) {
-        Optional<Train> train = trainService.getTrainById(id);
-        return train.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
-    }
+        @GetMapping("/{id}")
+        public ResponseEntity<TrainDetailsDTO> getTrainById(@PathVariable Long id) {
+        Optional<Train> trainOpt = trainService.getTrainById(id);
+        if (trainOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        Train train = trainOpt.get();
+        String departureStationName = stationRepository.findById(train.getDepartureStationId())
+            .map(Station::getName).orElse("Unknown");
+        String arrivalStationName = stationRepository.findById(train.getArrivalStationId())
+            .map(Station::getName).orElse("Unknown");
+        TrainDetailsDTO dto = new TrainDetailsDTO(
+            train.getId(),
+            train.getTrainNumber(),
+            departureStationName,
+            arrivalStationName,
+            train.getDepartureTime() != null ? train.getDepartureTime().toString() : null,
+            train.getArrivalTime() != null ? train.getArrivalTime().toString() : null
+        );
+        return ResponseEntity.ok(dto);
+        }
 
     @PostMapping
     public ResponseEntity<Train> createTrain(@RequestBody Train train) {

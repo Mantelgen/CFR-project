@@ -14,8 +14,7 @@ const MainDashboardPage = () => {
     pendingReservations: 0,
   });
 
-  useEffect(() => {
-    const loadDashboard = async () => {
+  const loadDashboard = async () => {
       const nextStats = {
         backendInfo: "Unavailable",
         totalTrains: 0,
@@ -76,6 +75,15 @@ const MainDashboardPage = () => {
     loadDashboard();
   }, []);
 
+  // Manual refresh handler
+  const handleRefresh = () => {
+    setIsLoading(true);
+    // Add a small delay to ensure state update and always force reload
+    setTimeout(() => {
+      loadDashboard();
+    }, 100);
+  };
+
   return (
     <div className="cfr-page-bg">
       <TopTaskbar />
@@ -99,7 +107,12 @@ const MainDashboardPage = () => {
             </div>
             <div className="col-lg-5 mt-4 mt-lg-0">
               <div className="cfr-status-panel">
-                <h5 className="mb-3">System Feed</h5>
+                <div className="d-flex justify-content-between align-items-center mb-2">
+                  <h5 className="mb-0">System Feed</h5>
+                  <button className="btn btn-sm btn-outline-light" onClick={handleRefresh} disabled={isLoading}>
+                    Refresh
+                  </button>
+                </div>
                 <p className="mb-1">{stats.backendInfo}</p>
                 <small className="text-white-50">
                   {isLoading ? "Refreshing dashboard metrics..." : "Dashboard updated just now."}

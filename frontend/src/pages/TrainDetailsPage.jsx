@@ -58,8 +58,8 @@ const TrainDetailsPage = () => {
         <div className="card cfr-card shadow-lg">
           <div className="card-body p-5">
             <h2 className="mb-4">Train {train.trainNumber}</h2>
-            <p><strong>From:</strong> {train.departureStation?.name}</p>
-            <p><strong>To:</strong> {train.arrivalStation?.name}</p>
+            <p><strong>From:</strong> {train.departureStationName}</p>
+            <p><strong>To:</strong> {train.arrivalStationName}</p>
             <p><strong>Departure Time:</strong> {train.departureTime}</p>
             <p><strong>Arrival Time:</strong> {train.arrivalTime}</p>
             {/* Add more details as needed */}
