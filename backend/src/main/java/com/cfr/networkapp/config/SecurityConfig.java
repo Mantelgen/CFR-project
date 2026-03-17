@@ -57,15 +57,9 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.DELETE, "/api/trains/**").authenticated()
                 // Only authenticated users can access reservations
                 .requestMatchers("/api/reservations/**").authenticated()
-                .requestMatchers("/login").permitAll()
                 .requestMatchers("/register").permitAll()
                 .requestMatchers("/").permitAll()
                 .anyRequest().authenticated()
-            )
-            .formLogin(form -> form
-                .loginPage("/login")
-                .defaultSuccessUrl("/api/search", true)
-                .permitAll()
             )
             .logout(logout -> logout
                 .logoutUrl("/api/auth/logout")
