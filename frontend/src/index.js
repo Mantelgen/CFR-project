@@ -1,4 +1,9 @@
 import axios from "axios";
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import App from './App';
+
 // Always send cookies (JSESSIONID) with requests
 axios.defaults.withCredentials = true;
 
@@ -27,10 +32,6 @@ const fetchCsrfToken = async () => {
 };
 
 fetchCsrfToken();
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import App from './App';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
