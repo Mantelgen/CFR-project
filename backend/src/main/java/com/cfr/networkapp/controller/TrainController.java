@@ -1,53 +1,75 @@
 package com.cfr.networkapp.controller;
 
 import com.cfr.networkapp.model.Train;
-import com.cfr.networkapp.repository.TrainRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.cfr.networkapp.service.TrainService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/trains")
-@CrossOrigin(origins = "*") // Allows your frontend to communicate with this API
 public class TrainController {
 
-    private static final Logger logger = LoggerFactory.getLogger(TrainController.class);
+    private final TrainService trainService;
 
-    @Autowired
-    private TrainRepository trainRepository;
+    public TrainController(TrainService trainService) {
+        this.trainService = trainService;
+    }
 
-    // Get all trains
+    @GetMapping("/search")
+    public List<Train> search(
+            @RequestParam String from,
+            @RequestParam String to
+    ) {
+        return trainService.searchTrains(from, to);
+    }
+
     @GetMapping
     public List<Train> getAllTrains() {
-        logger.info("Fetching all trains");
-        List<Train> trains = trainRepository.findAll();
-        logger.info("Retrieved {} trains", trains.size());
-        return trains;
+        return trainService.getAllTrains();
     }
 
-    // Create a new train
+    @GetMapping("/{id}")
+    public ResponseEntity<Train> getTrainById(@PathVariable Long id) {
+        Optional<Train> train = trainService.getTrainById(id);
+        return train.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
     @PostMapping
-    public Train createTrain(@RequestBody Train train) {
-        logger.info("Creating new train: {}", train);
-        Train savedTrain = trainRepository.save(train);
-        logger.info("Train created successfully with ID: {}", savedTrain.getId());
-        return savedTrain;
+    public ResponseEntity<Train> createTrain(@RequestBody Train train) {
+        try {
+            Train createdTrain = trainService.createTrain(train);
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdTrain);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
-    // Delete a train
+    @PutMapping("/{id}")
+    public ResponseEntity<Train> updateTrain(
+            @PathVariable Long id,
+            @RequestBody Train trainDetails
+    ) {
+        try {
+            Train updatedTrain = trainService.updateTrain(id, trainDetails);
+            return ResponseEntity.ok(updatedTrain);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTrain(@PathVariable Long id) {
-        logger.info("Attempting to delete train with ID: {}", id);
-        if (trainRepository.existsById(id)) {
-            trainRepository.deleteById(id);
-            logger.info("Train with ID {} deleted successfully", id);
-            return ResponseEntity.ok().build();
+        try {
+            trainService.deleteTrain(id);
+            return ResponseEntity.noContent().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
         }
-        logger.warn("Train with ID {} not found for deletion", id);
-        return ResponseEntity.notFound().build();
     }
+
 }

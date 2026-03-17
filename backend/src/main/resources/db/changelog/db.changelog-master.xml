@@ -6,5 +6,7 @@
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd">
 
     <include file="changes/001-initial-schema.xml" relativeToChangelogFile="true"/>
-
+    <include file="changes/002-create-stations-trains.xml" relativeToChangelogFile="true"/>
+    <include file="changes/003-create-users-reservations.xml" relativeToChangelogFile="true"/>
+    
 </databaseChangeLog>

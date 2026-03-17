@@ -93,6 +93,12 @@ services:
       - cfr-network
 
 
+  # BACKEND SERVICE - REPLICAS
+  # To run with 3 backend replicas, use:
+  #   docker-compose up --scale backend=3 -d
+  # This will create backend_1, backend_2, backend_3 containers
+  # Nginx will automatically load balance requests across all replicas
+  # All replicas share the same Redis session store (configured in application.properties)
   backend:
     build:
       context: ./backend
@@ -138,6 +144,7 @@ services:
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - nginx-logs:/var/log/nginx
+      - ./nginx/certs:/etc/nginx/certs:ro
     depends_on:
       backend:
         condition: service_healthy
@@ -146,6 +153,8 @@ services:
     ports:
       - "80:80"
       - "8080:8080"
+      - "8443:8443"
+      - "443:8443"
     networks:
       - cfr-network
 
@@ -246,6 +255,25 @@ services:
       - "9113:9113"
     depends_on:
       - nginx
+    networks:
+      - cfr-network
+  
+  mailpit:
+    image: axllent/mailpit
+    container_name: mailpit
+    restart: unless-stopped
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    networks:
+      - cfr-network
+
+  redis:
+    image: redis:7
+    container_name: redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
     networks:
       - cfr-network
 

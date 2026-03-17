@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+ xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+ http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <!-- Stations table -->
+    <changeSet id="002-create-stations" author="cosmin">
+
+        <createTable tableName="stations">
+
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="name" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+
+        </createTable>
+
+    </changeSet>
+
+
+
+    <!-- Insert stations -->
+
+    <changeSet id="003-insert-stations" author="cosmin">
+
+        <insert tableName="stations">
+            <column name="name" value="Cluj"/>
+        </insert>
+
+        <insert tableName="stations">
+            <column name="name" value="Brasov"/>
+        </insert>
+
+        <insert tableName="stations">
+            <column name="name" value="Bucuresti"/>
+        </insert>
+
+    </changeSet>
+
+
+    <!-- Insert trains -->
+
+    <changeSet id="004-insert-trains" author="cosmin">
+
+        <insert tableName="trains">
+            <column name="train_number" value="IR1745"/>
+            <column name="departure_station_id" valueNumeric="1"/>
+            <column name="arrival_station_id" valueNumeric="3"/>
+            <column name="departure_time" value="08:00:00"/>
+            <column name="arrival_time" value="14:20:00"/>
+        </insert>
+
+    </changeSet>
+
+</databaseChangeLog>

@@ -78,10 +78,7 @@
             <groupId>org.liquibase</groupId>
             <artifactId>liquibase-core</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.session</groupId>
-            <artifactId>spring-session-jdbc</artifactId>
-        </dependency>
+        
 
         <!-- Prometheus metrics support -->
         <dependency>
@@ -93,7 +90,21 @@
             <artifactId>micrometer-registry-prometheus</artifactId>
             <scope>runtime</scope>
         </dependency>
+	
+	<dependency>
+    	    <groupId>org.springframework.boot</groupId>
+    	    <artifactId>spring-boot-starter-mail</artifactId>
+	</dependency>
 
+	<dependency>
+    	    <groupId>org.springframework.session</groupId>
+    	    <artifactId>spring-session-data-redis</artifactId>
+	</dependency>
+
+	<dependency>
+    	    <groupId>org.springframework.boot</groupId>
+    	    <artifactId>spring-boot-starter-data-redis</artifactId>
+	</dependency>
     </dependencies>
 
     <build>
