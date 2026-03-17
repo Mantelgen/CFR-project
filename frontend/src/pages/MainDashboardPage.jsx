@@ -72,6 +72,8 @@ const MainDashboardPage = () => {
       setIsLoading(false);
     };
 
+
+  useEffect(() => {
     loadDashboard();
   }, []);
 
