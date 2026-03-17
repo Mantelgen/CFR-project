@@ -15,6 +15,7 @@ const TrainSearchPage = () => {
   const [bookingSuccess, setBookingSuccess] = useState(false);
   const [isPaying, setIsPaying] = useState(false);
   const [reservationId, setReservationId] = useState(null);
+  const [backendInfo, setBackendInfo] = useState("Connecting...");
   const [paymentForm, setPaymentForm] = useState({
     cardHolder: "",
     cardNumber: "",
@@ -29,6 +30,19 @@ const TrainSearchPage = () => {
       navigate("/login");
     }
   }, [navigate]);
+
+  useEffect(() => {
+    const fetchBackendInfo = async () => {
+      try {
+        const response = await axios.get("/api/info", { timeout: 5000 });
+        setBackendInfo(response.data || "Unavailable");
+      } catch (err) {
+        setBackendInfo("Backend info unavailable");
+      }
+    };
+
+    fetchBackendInfo();
+  }, []);
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -135,6 +149,9 @@ const TrainSearchPage = () => {
             <h1 className="mb-1">CFR Train Booking</h1>
             <p className="mb-0">
             Welcome, {localStorage.getItem("username")}
+            </p>
+            <p className="mb-0 mt-1" style={{ fontSize: "0.95rem", opacity: 0.95 }}>
+              Connected backend: {backendInfo}
             </p>
           </div>
           <div className="col-md-4 text-md-end mt-3 mt-md-0">
