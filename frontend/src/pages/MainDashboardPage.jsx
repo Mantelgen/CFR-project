@@ -77,7 +77,12 @@ const MainDashboardPage = () => {
     loadDashboard();
   }, []);
 
-  // Manual refresh handler removed. System Feed now updates only on full page reload.
+
+  // Manual refresh handler: allows user to refresh dashboard data
+  const handleRefresh = () => {
+    setIsLoading(true);
+    loadDashboard();
+  };
 
   return (
     <div className="cfr-page-bg">
@@ -104,6 +109,19 @@ const MainDashboardPage = () => {
               <div className="cfr-status-panel">
                 <div className="d-flex justify-content-between align-items-center mb-2">
                   <h5 className="mb-0">System Feed</h5>
+                  <button
+                    className="btn btn-sm btn-outline-light ms-2"
+                    style={{ fontSize: "0.9rem" }}
+                    onClick={handleRefresh}
+                    disabled={isLoading}
+                    title="Refresh dashboard"
+                  >
+                    {isLoading ? (
+                      <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    ) : (
+                      <span>&#x21bb;</span>
+                    )}
+                  </button>
                 </div>
                 <p className="mb-1">{stats.backendInfo}</p>
                 <small className="text-white-50">
