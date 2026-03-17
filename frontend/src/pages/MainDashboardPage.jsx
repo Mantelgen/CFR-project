@@ -27,7 +27,7 @@ const MainDashboardPage = () => {
       try {
         const infoResponse = await axios.get("/api/info", {
           timeout: 6000,
-          params: { _ts: Date.now() },
+          params: { _ts: Date.now(), _rnd: Math.random().toString(36).slice(2) },
           headers: {
             "Cache-Control": "no-cache",
             Pragma: "no-cache",
