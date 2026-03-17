@@ -7,8 +7,13 @@ import MainDashboardPage from "./pages/MainDashboardPage";
 import "./styles/app-theme.css";
 
 function App() {
+  const routerBase =
+    process.env.PUBLIC_URL && process.env.PUBLIC_URL !== "."
+      ? process.env.PUBLIC_URL
+      : "/";
+
   return (
-    <Router>
+    <Router basename={routerBase}>
 
       <Routes>
 

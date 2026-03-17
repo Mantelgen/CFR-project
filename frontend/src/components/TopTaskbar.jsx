@@ -4,7 +4,7 @@ import { NavLink, useLocation, useNavigate } from "react-router-dom";
 const TopTaskbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [logoSrc, setLogoSrc] = useState("/cfr-logo.png");
+  const [logoSrc, setLogoSrc] = useState(`${process.env.PUBLIC_URL}/cfr-logo.png`);
 
   const isAuthenticated = Boolean(localStorage.getItem("userId"));
   const username = localStorage.getItem("username") || "Guest";
@@ -28,7 +28,7 @@ const TopTaskbar = () => {
               src={logoSrc}
               alt="CFR Calatori"
               className="cfr-brand-logo"
-              onError={() => setLogoSrc("/logo192.png")}
+              onError={() => setLogoSrc(`${process.env.PUBLIC_URL}/cfr-bg.svg`)}
             />
             <span className="cfr-brand-text">
               <strong>CFR Calatori</strong>

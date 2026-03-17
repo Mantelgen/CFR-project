@@ -26,7 +26,7 @@ body {
     radial-gradient(circle at 10% 10%, rgba(242, 182, 0, 0.24), transparent 24%),
     radial-gradient(circle at 92% 20%, rgba(0, 166, 168, 0.2), transparent 28%),
     linear-gradient(165deg, rgba(255, 255, 255, 0.97) 0%, rgba(237, 244, 255, 0.96) 100%),
-    url("/cfr-bg.svg");
+    url("../assets/cfr-bg.svg");
   background-size: auto, auto, auto, cover;
   background-position: center;
   background-attachment: fixed;
