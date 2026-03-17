@@ -35,8 +35,21 @@ const TrainSearchPage = () => {
   useEffect(() => {
     const fetchBackendInfo = async () => {
       try {
-        const response = await axios.get("/api/info", { timeout: 5000 });
-        setBackendInfo(response.data || "Unavailable");
+        const response = await axios.get("/api/info", {
+          timeout: 5000,
+          params: { _ts: Date.now() },
+          headers: {
+            "Cache-Control": "no-cache",
+            Pragma: "no-cache",
+          },
+        });
+        if (typeof response.data === "string") {
+          setBackendInfo(response.data || "Unavailable");
+        } else {
+          const host = response.data?.serverHost || "unknown-host";
+          const ip = response.data?.serverIp || "unknown-ip";
+          setBackendInfo(`${host} (${ip})`);
+        }
       } catch (err) {
         setBackendInfo("Backend info unavailable");
       }

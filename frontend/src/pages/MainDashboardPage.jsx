@@ -25,8 +25,21 @@ const MainDashboardPage = () => {
       };
 
       try {
-        const infoResponse = await axios.get("/api/info", { timeout: 6000 });
-        nextStats.backendInfo = infoResponse.data || "Unavailable";
+        const infoResponse = await axios.get("/api/info", {
+          timeout: 6000,
+          params: { _ts: Date.now() },
+          headers: {
+            "Cache-Control": "no-cache",
+            Pragma: "no-cache",
+          },
+        });
+        if (typeof infoResponse.data === "string") {
+          nextStats.backendInfo = infoResponse.data;
+        } else {
+          const host = infoResponse.data?.serverHost || "unknown-host";
+          const ip = infoResponse.data?.serverIp || "unknown-ip";
+          nextStats.backendInfo = `${host} (${ip})`;
+        }
       } catch (error) {
         nextStats.backendInfo = "Backend info unavailable";
       }
