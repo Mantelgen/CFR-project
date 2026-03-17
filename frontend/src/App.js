@@ -4,6 +4,7 @@ import AuthPage from "./pages/AuthPage";
 import MyReservationsPage from "./pages/MyReservationsPage";
 import ConfirmationPage from "./pages/ConfirmationPage";
 import MainDashboardPage from "./pages/MainDashboardPage";
+import AppErrorBoundary from "./components/AppErrorBoundary";
 import "./styles/app-theme.css";
 
 function App() {
@@ -14,7 +15,7 @@ function App() {
 
   return (
     <Router basename={routerBase}>
-
+      <AppErrorBoundary>
       <Routes>
 
         {/* Auth Routes */}
@@ -40,6 +41,7 @@ function App() {
         <Route path="*" element={<Navigate to="/" replace />} />
 
       </Routes>
+      </AppErrorBoundary>
 
     </Router>
   );

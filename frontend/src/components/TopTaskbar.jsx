@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 const TopTaskbar = () => {
   const navigate = useNavigate();
@@ -9,6 +9,8 @@ const TopTaskbar = () => {
   const isAuthenticated = Boolean(localStorage.getItem("userId"));
   const username = localStorage.getItem("username") || "Guest";
   const isAuthRoute = ["/login", "/register"].includes(location.pathname);
+  const isActive = (path) =>
+    path === "/" ? location.pathname === "/" : location.pathname.startsWith(path);
 
   const handleLogout = () => {
     localStorage.clear();
@@ -50,15 +52,18 @@ const TopTaskbar = () => {
 
           <div className="collapse navbar-collapse" id="cfrTaskbarNav">
             <div className="navbar-nav ms-auto align-items-center gap-2">
-              <NavLink to="/" className="cfr-nav-link">
+              <Link to="/" className={`cfr-nav-link ${isActive("/") ? "active" : ""}`}>
                 Dashboard
-              </NavLink>
-              <NavLink to="/search" className="cfr-nav-link">
+              </Link>
+              <Link to="/search" className={`cfr-nav-link ${isActive("/search") ? "active" : ""}`}>
                 Search Trains
-              </NavLink>
-              <NavLink to="/my-reservations" className="cfr-nav-link">
+              </Link>
+              <Link
+                to="/my-reservations"
+                className={`cfr-nav-link ${isActive("/my-reservations") ? "active" : ""}`}
+              >
                 My Reservations
-              </NavLink>
+              </Link>
 
               {isAuthenticated ? (
                 <>
