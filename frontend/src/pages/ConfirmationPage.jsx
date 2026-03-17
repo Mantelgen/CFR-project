@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
+import TopTaskbar from "../components/TopTaskbar";
 
 const ConfirmationPage = ({ type = "email" }) => {
   const [searchParams] = useSearchParams();
@@ -10,22 +11,10 @@ const ConfirmationPage = ({ type = "email" }) => {
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const token = searchParams.get("token");
-
-    if (!token) {
-      setMessage("Invalid or missing confirmation token");
-      setIsSuccess(false);
-      setIsLoading(false);
-      return;
-    }
-
-    confirmAction(token);
-  }, [searchParams]);
-
   const confirmAction = async (token) => {
     try {
-      let endpoint, successMsg;
+      let endpoint;
+      let successMsg;
 
       if (type === "email") {
         endpoint = `/api/auth/confirm-email?token=${token}`;
@@ -60,47 +49,66 @@ const ConfirmationPage = ({ type = "email" }) => {
     }
   };
 
+  useEffect(() => {
+    const token = searchParams.get("token");
+
+    if (!token) {
+      setMessage("Invalid or missing confirmation token");
+      setIsSuccess(false);
+      setIsLoading(false);
+      return;
+    }
+
+    confirmAction(token);
+  }, [searchParams]);
+
   if (isLoading) {
     return (
-      <div className="container mt-5">
-        <div className="text-center">
-          <div className="spinner-border" role="status">
-            <span className="visually-hidden">Loading...</span>
+      <div className="cfr-page-bg">
+        <TopTaskbar />
+        <div className="container mt-5">
+          <div className="text-center">
+            <div className="spinner-border" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </div>
+            <p className="mt-3">Processing confirmation...</p>
           </div>
-          <p className="mt-3">Processing confirmation...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="container mt-5">
-      <div className="row justify-content-center">
-        <div className="col-md-8 col-lg-6">
-          <div className="card shadow-lg">
-            <div className="card-body p-5 text-center">
-              {isSuccess ? (
-                <>
-                  <h1 className="text-success mb-3">✓</h1>
-                  <h2>Confirmation Successful</h2>
-                  <p className="mt-3">{message}</p>
-                  <p className="text-muted">
-                    Redirecting automatically in 3 seconds...
-                  </p>
-                </>
-              ) : (
-                <>
-                  <h1 className="text-danger mb-3">✗</h1>
-                  <h2>Confirmation Failed</h2>
-                  <p className="mt-3 text-danger">{message}</p>
-                  <button
-                    className="btn btn-primary mt-3"
-                    onClick={() => navigate("/")}
-                  >
-                    Go Home
-                  </button>
-                </>
-              )}
+    <div className="cfr-page-bg">
+      <TopTaskbar />
+      <div className="container mt-5">
+        <div className="row justify-content-center">
+          <div className="col-md-8 col-lg-6">
+            <div className="card cfr-card shadow-lg">
+              <div className="card-body p-5 text-center">
+                {isSuccess ? (
+                  <>
+                    <h1 className="text-success mb-3">Success</h1>
+                    <h2>Confirmation Successful</h2>
+                    <p className="mt-3">{message}</p>
+                    <p className="text-muted">
+                      Redirecting automatically in 3 seconds...
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <h1 className="text-danger mb-3">Failed</h1>
+                    <h2>Confirmation Failed</h2>
+                    <p className="mt-3 text-danger">{message}</p>
+                    <button
+                      className="btn btn-primary mt-3"
+                      onClick={() => navigate("/")}
+                    >
+                      Go Home
+                    </button>
+                  </>
+                )}
+              </div>
             </div>
           </div>
         </div>

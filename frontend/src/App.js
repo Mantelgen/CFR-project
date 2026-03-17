@@ -3,6 +3,7 @@ import TrainSearchPage from "./pages/TrainSearchPage";
 import AuthPage from "./pages/AuthPage";
 import MyReservationsPage from "./pages/MyReservationsPage";
 import ConfirmationPage from "./pages/ConfirmationPage";
+import MainDashboardPage from "./pages/MainDashboardPage";
 import "./styles/app-theme.css";
 
 function App() {
@@ -26,11 +27,12 @@ function App() {
         />
 
         {/* Main Routes */}
+        <Route path="/" element={<MainDashboardPage />} />
         <Route path="/search" element={<TrainSearchPage />} />
         <Route path="/my-reservations" element={<MyReservationsPage />} />
 
         {/* Default Route */}
-        <Route path="/" element={<Navigate to="/search" replace />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
 
       </Routes>
 

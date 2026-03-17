@@ -1,44 +1,199 @@
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap");
+
 :root {
-  --cfr-ink: #1b1f3b;
-  --cfr-sky: #d9f0ff;
-  --cfr-blue: #1f6feb;
-  --cfr-gold: #f5b700;
-  --cfr-teal: #16a6b6;
-  --cfr-soft: #f5f8ff;
+  --cfr-ink: #10213f;
+  --cfr-steel: #476289;
+  --cfr-blue: #1f67cd;
+  --cfr-gold: #f2b600;
+  --cfr-mint: #00a6a8;
+  --cfr-soft: #f3f8ff;
+}
+
+* {
+  box-sizing: border-box;
 }
 
 body {
-  background: radial-gradient(circle at top left, #eef7ff 0%, #f9fcff 45%, #fff8ec 100%);
+  margin: 0;
+  font-family: "Manrope", "Segoe UI", sans-serif;
+  background: #eef5ff;
   color: var(--cfr-ink);
+}
+
+.cfr-page-bg {
+  min-height: 100vh;
+  background-image:
+    radial-gradient(circle at 10% 10%, rgba(242, 182, 0, 0.24), transparent 24%),
+    radial-gradient(circle at 92% 20%, rgba(0, 166, 168, 0.2), transparent 28%),
+    linear-gradient(165deg, rgba(255, 255, 255, 0.97) 0%, rgba(237, 244, 255, 0.96) 100%),
+    url("/cfr-bg.svg");
+  background-size: auto, auto, auto, cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+.cfr-taskbar-wrap {
+  position: sticky;
+  top: 0;
+  z-index: 1030;
+  padding: 0.9rem 1rem 0;
+}
+
+.cfr-taskbar {
+  border-radius: 18px;
+  border: 1px solid rgba(16, 33, 63, 0.06);
+  background: rgba(255, 255, 255, 0.84);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 10px 35px rgba(17, 35, 72, 0.12);
+}
+
+.cfr-brand {
+  border: 0;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0;
+}
+
+.cfr-brand-logo {
+  width: 64px;
+  height: 46px;
+  object-fit: contain;
+}
+
+.cfr-brand-text {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.1;
+}
+
+.cfr-brand-text strong {
+  font-family: "Plus Jakarta Sans", "Segoe UI", sans-serif;
+  font-size: 1rem;
+  letter-spacing: 0.02em;
+  color: #0e2f63;
+}
+
+.cfr-brand-text small {
+  color: var(--cfr-steel);
+  font-size: 0.75rem;
+}
+
+.cfr-nav-link {
+  text-decoration: none;
+  color: #1d3965;
+  font-weight: 700;
+  border-radius: 10px;
+  padding: 0.45rem 0.8rem;
+  transition: all 0.25s ease;
+}
+
+.cfr-nav-link:hover,
+.cfr-nav-link.active {
+  background: rgba(31, 103, 205, 0.12);
+  color: #0b4ea8;
+}
+
+.cfr-user-chip {
+  background: #e6f4ff;
+  color: #0f4f9f;
+  border-radius: 999px;
+  padding: 0.35rem 0.8rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.navbar-toggler {
+  border: 0;
+  box-shadow: none;
+}
+
+.navbar-toggler-icon {
+  background-image: linear-gradient(#0f4f9f, #0f4f9f), linear-gradient(#0f4f9f, #0f4f9f), linear-gradient(#0f4f9f, #0f4f9f);
+  background-size: 22px 2px, 22px 2px, 22px 2px;
+  background-position: center 7px, center 14px, center 21px;
 }
 
 .cfr-shell {
   min-height: 100vh;
-  padding: 1.5rem;
+  padding: 1.6rem;
+}
+
+.cfr-landing-hero {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(124deg, #0f4f9f 0%, #1785c7 42%, #02a7a9 100%);
+  color: #fff;
+  border-radius: 18px;
+  box-shadow: 0 16px 38px rgba(11, 62, 138, 0.32);
+  animation: cfrSlideIn 0.65s ease-out;
+}
+
+.cfr-landing-hero::after {
+  content: "";
+  position: absolute;
+  width: 420px;
+  height: 420px;
+  border-radius: 999px;
+  right: -110px;
+  top: -150px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.38) 0%, rgba(255, 255, 255, 0) 70%);
+}
+
+.cfr-status-panel {
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 14px;
+  padding: 1rem;
+  animation: cfrPulse 4s ease-in-out infinite;
 }
 
 .cfr-hero {
-  background: linear-gradient(120deg, #1f6feb 0%, #16a6b6 55%, #f5b700 100%);
+  background: linear-gradient(125deg, #1f6feb 0%, #13a4b8 55%, #f2b600 100%);
   color: #fff;
   border-radius: 16px;
-  box-shadow: 0 14px 40px rgba(31, 111, 235, 0.25);
+  box-shadow: 0 14px 35px rgba(31, 111, 235, 0.24);
+  animation: cfrSlideIn 0.6s ease-out;
 }
 
 .cfr-card {
-  border: 0;
+  border: 1px solid rgba(16, 33, 63, 0.05);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(4px);
   border-radius: 14px;
   box-shadow: 0 10px 26px rgba(27, 31, 59, 0.08);
 }
 
+.cfr-kpi-card {
+  border-top: 5px solid rgba(31, 103, 205, 0.22);
+  transition: transform 0.24s ease, box-shadow 0.24s ease;
+}
+
+.cfr-kpi-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 28px rgba(14, 60, 128, 0.16);
+}
+
+.cfr-kpi-label {
+  color: #5a7195;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.74rem;
+  margin-bottom: 0.4rem;
+}
+
 .cfr-primary {
-  background: linear-gradient(120deg, #1f6feb 0%, #2ea0ff 100%);
+  background: linear-gradient(120deg, #1f67cd 0%, #2ca6ff 100%);
   border: 0;
 }
 
 .cfr-accent {
-  background: linear-gradient(120deg, #f5b700 0%, #f29100 100%);
+  background: linear-gradient(120deg, #f5b700 0%, #ec9800 100%);
   border: 0;
-  color: #1b1f3b;
+  color: #10213f;
 }
 
 .cfr-muted-chip {
@@ -58,4 +213,64 @@ body {
 
 .cfr-modal {
   background-color: rgba(20, 30, 65, 0.5);
+}
+
+.cfr-auth-wrap {
+  padding-top: 3rem;
+  padding-bottom: 2rem;
+}
+
+.cfr-fade-up {
+  animation: cfrFadeUp 0.65s ease-out;
+}
+
+@keyframes cfrSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes cfrFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes cfrPulse {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+@media (max-width: 768px) {
+  .cfr-taskbar-wrap {
+    padding: 0.7rem 0.6rem 0;
+  }
+
+  .cfr-shell {
+    padding: 1rem 0.8rem 1.2rem;
+  }
+
+  .cfr-brand-logo {
+    width: 54px;
+    height: 38px;
+  }
+
+  .cfr-brand-text strong {
+    font-size: 0.92rem;
+  }
 }

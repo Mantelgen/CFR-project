@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
+import TopTaskbar from "../components/TopTaskbar";
 
 const MyReservationsPage = () => {
   const [reservations, setReservations] = useState([]);
@@ -64,7 +65,9 @@ const MyReservationsPage = () => {
   }
 
   return (
-    <div className="cfr-shell container-fluid mt-2">
+    <div className="cfr-page-bg">
+      <TopTaskbar />
+      <div className="cfr-shell container-fluid">
       {/* Header */}
       <div className="cfr-hero p-4 mb-4">
         <div className="row align-items-center">
@@ -72,23 +75,7 @@ const MyReservationsPage = () => {
             <h1 className="mb-1">My Reservations</h1>
             <p className="mb-0">Track payment and booking confirmations</p>
           </div>
-          <div className="col-md-4 text-md-end mt-3 mt-md-0">
-            <button
-              className="btn btn-light me-2"
-              onClick={() => navigate("/search")}
-            >
-              Search More Trains
-            </button>
-            <button
-              className="btn cfr-accent"
-              onClick={() => {
-                localStorage.clear();
-                navigate("/login");
-              }}
-            >
-              Logout
-            </button>
-          </div>
+          <div className="col-md-4 text-md-end mt-3 mt-md-0"></div>
         </div>
       </div>
 
@@ -188,6 +175,7 @@ const MyReservationsPage = () => {
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 };
