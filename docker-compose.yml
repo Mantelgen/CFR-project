@@ -93,6 +93,12 @@ services:
       - cfr-network
 
 
+  # BACKEND SERVICE - REPLICAS
+  # To run with 3 backend replicas, use:
+  #   docker-compose up --scale backend=3 -d
+  # This will create backend_1, backend_2, backend_3 containers
+  # Nginx will automatically load balance requests across all replicas
+  # All replicas share the same Redis session store (configured in application.properties)
   backend:
     build:
       context: ./backend
