@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="005-insert-more-trains" author="copilot">
+        <insert tableName="trains">
+            <column name="train_number" value="IR1821"/>
+            <column name="departure_station_id" valueNumeric="2"/>
+            <column name="arrival_station_id" valueNumeric="1"/>
+            <column name="departure_time" value="10:15:00"/>
+            <column name="arrival_time" value="15:30:00"/>
+        </insert>
+        <insert tableName="trains">
+            <column name="train_number" value="R3002"/>
+            <column name="departure_station_id" valueNumeric="3"/>
+            <column name="arrival_station_id" valueNumeric="2"/>
+            <column name="departure_time" value="12:00:00"/>
+            <column name="arrival_time" value="16:45:00"/>
+        </insert>
+        <insert tableName="trains">
+            <column name="train_number" value="IR1590"/>
+            <column name="departure_station_id" valueNumeric="1"/>
+            <column name="arrival_station_id" valueNumeric="2"/>
+            <column name="departure_time" value="18:30:00"/>
+            <column name="arrival_time" value="22:10:00"/>
+        </insert>
+        <insert tableName="trains">
+            <column name="train_number" value="R4010"/>
+            <column name="departure_station_id" valueNumeric="2"/>
+            <column name="arrival_station_id" valueNumeric="3"/>
+            <column name="departure_time" value="06:45:00"/>
+            <column name="arrival_time" value="11:00:00"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

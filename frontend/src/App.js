@@ -5,6 +5,7 @@ import MyReservationsPage from "./pages/MyReservationsPage";
 import ConfirmationPage from "./pages/ConfirmationPage";
 import MainDashboardPage from "./pages/MainDashboardPage";
 import AppErrorBoundary from "./components/AppErrorBoundary";
+import TrainDetailsPage from "./pages/TrainDetailsPage";
 import "./styles/app-theme.css";
 
 function App() {
@@ -35,6 +36,8 @@ function App() {
         {/* Main Routes */}
         <Route path="/" element={<MainDashboardPage />} />
         <Route path="/search" element={<TrainSearchPage />} />
+
+        <Route path="/train/:trainId" element={<TrainDetailsPage />} />
         <Route path="/my-reservations" element={<MyReservationsPage />} />
 
         {/* Default Route */}

@@ -26,12 +26,13 @@ const TopTaskbar = () => {
             onClick={() => navigate("/")}
             type="button"
           >
-            <img
-              src={logoSrc}
-              alt="CFR Calatori"
-              className="cfr-brand-logo"
-              onError={() => setLogoSrc(`${process.env.PUBLIC_URL}/cfr-bg.svg`)}
-            />
+              <img
+                src={logoSrc}
+                alt="CFR Calatori"
+                className="cfr-brand-logo"
+                style={{ background: '#fff', borderRadius: 8, border: '1px solid #e0e0e0', padding: 2 }}
+                onError={() => setLogoSrc(`${process.env.PUBLIC_URL}/logo192.png`)}
+              />
             <span className="cfr-brand-text">
               <strong>CFR Calatori</strong>
               <small>Digital Rail Center</small>

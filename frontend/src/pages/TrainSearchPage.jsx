@@ -267,10 +267,16 @@ const TrainSearchPage = () => {
                       <td>{train.arrivalTime}</td>
                       <td>
                         <button
-                          className="btn btn-sm cfr-accent"
+                          className="btn btn-sm cfr-accent me-2"
                           onClick={() => handleBook(train)}
                         >
                           Book Now
+                        </button>
+                        <button
+                          className="btn btn-sm btn-outline-primary"
+                          onClick={() => navigate(`/train/${train.id}`)}
+                        >
+                          Details
                         </button>
                       </td>
                     </tr>
