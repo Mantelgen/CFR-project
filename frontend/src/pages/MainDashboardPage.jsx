@@ -77,14 +77,7 @@ const MainDashboardPage = () => {
     loadDashboard();
   }, []);
 
-  // Manual refresh handler
-  const handleRefresh = () => {
-    setIsLoading(true);
-    // Add a small delay to ensure state update and always force reload
-    setTimeout(() => {
-      loadDashboard();
-    }, 100);
-  };
+  // Manual refresh handler removed. System Feed now updates only on full page reload.
 
   return (
     <div className="cfr-page-bg">
@@ -111,9 +104,6 @@ const MainDashboardPage = () => {
               <div className="cfr-status-panel">
                 <div className="d-flex justify-content-between align-items-center mb-2">
                   <h5 className="mb-0">System Feed</h5>
-                  <button className="btn btn-sm btn-outline-light" onClick={handleRefresh} disabled={isLoading}>
-                    Refresh
-                  </button>
                 </div>
                 <p className="mb-1">{stats.backendInfo}</p>
                 <small className="text-white-50">
