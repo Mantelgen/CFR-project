@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="006-add-train-composition-columns" author="copilot">
+        <addColumn tableName="trains">
+            <column name="class_1_carriages" type="INT" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="class_2_carriages" type="INT" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="007-seed-train-composition" author="copilot">
+        <sql>
+            UPDATE trains SET class_1_carriages = 1, class_2_carriages = 2 WHERE train_number = 'IR1745';
+            UPDATE trains SET class_1_carriages = 1, class_2_carriages = 3 WHERE train_number = 'IR1821';
+            UPDATE trains SET class_1_carriages = 0, class_2_carriages = 4 WHERE train_number = 'R3002';
+            UPDATE trains SET class_1_carriages = 2, class_2_carriages = 2 WHERE train_number = 'IR1590';
+            UPDATE trains SET class_1_carriages = 1, class_2_carriages = 1 WHERE train_number = 'R4010';
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

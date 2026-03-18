@@ -10,5 +10,6 @@
     <include file="changes/003-create-users-reservations.xml" relativeToChangelogFile="true"/>
 
     <include file="changes/005-insert-more-trains.xml" relativeToChangelogFile="true"/>
+    <include file="changes/006-add-train-composition.xml" relativeToChangelogFile="true"/>
     
 </databaseChangeLog>

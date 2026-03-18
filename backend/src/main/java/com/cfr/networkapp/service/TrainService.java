@@ -37,6 +37,18 @@ public class TrainService {
         if (train.getDepartureTime() == null || train.getArrivalTime() == null) {
             throw new IllegalArgumentException("Departure and arrival times are required");
         }
+        if (train.getClass1Carriages() != null && train.getClass1Carriages() < 0) {
+            throw new IllegalArgumentException("Class 1 carriages cannot be negative");
+        }
+        if (train.getClass2Carriages() != null && train.getClass2Carriages() < 0) {
+            throw new IllegalArgumentException("Class 2 carriages cannot be negative");
+        }
+        if (train.getClass1Carriages() == null) {
+            train.setClass1Carriages(0);
+        }
+        if (train.getClass2Carriages() == null) {
+            train.setClass2Carriages(0);
+        }
         return trainRepository.save(train);
     }
 
@@ -58,6 +70,18 @@ public class TrainService {
         }
         if (trainDetails.getArrivalTime() != null) {
             train.setArrivalTime(trainDetails.getArrivalTime());
+        }
+        if (trainDetails.getClass1Carriages() != null) {
+            if (trainDetails.getClass1Carriages() < 0) {
+                throw new IllegalArgumentException("Class 1 carriages cannot be negative");
+            }
+            train.setClass1Carriages(trainDetails.getClass1Carriages());
+        }
+        if (trainDetails.getClass2Carriages() != null) {
+            if (trainDetails.getClass2Carriages() < 0) {
+                throw new IllegalArgumentException("Class 2 carriages cannot be negative");
+            }
+            train.setClass2Carriages(trainDetails.getClass2Carriages());
         }
 
         return trainRepository.save(train);

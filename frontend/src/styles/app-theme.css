@@ -224,6 +224,46 @@ body {
   animation: cfrFadeUp 0.65s ease-out;
 }
 
+.cfr-train-composition-strip {
+  margin-top: 0.75rem;
+  padding: 0.75rem;
+  display: flex;
+  gap: 0.45rem;
+  align-items: center;
+  overflow-x: auto;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #f8fbff 0%, #eaf2ff 100%);
+  border: 1px solid rgba(16, 33, 63, 0.1);
+}
+
+.cfr-train-part {
+  min-width: 72px;
+  height: 52px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-family: "Plus Jakarta Sans", "Segoe UI", sans-serif;
+  color: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 5px 10px rgba(16, 33, 63, 0.14);
+}
+
+.cfr-train-part-locomotive {
+  min-width: 90px;
+  background: linear-gradient(130deg, #0f4f9f 0%, #1b77d1 100%);
+}
+
+.cfr-train-part-class1 {
+  background: linear-gradient(130deg, #00a6a8 0%, #2dbcc4 100%);
+}
+
+.cfr-train-part-class2 {
+  background: linear-gradient(130deg, #f2b600 0%, #ec9800 100%);
+  color: #10213f;
+}
+
 @keyframes cfrSlideIn {
   from {
     opacity: 0;

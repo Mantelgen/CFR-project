@@ -26,6 +26,12 @@ public class Train {
     @Column(name = "arrival_time")
     private LocalTime arrivalTime;
 
+    @Column(name = "class_1_carriages")
+    private Integer class1Carriages = 0;
+
+    @Column(name = "class_2_carriages")
+    private Integer class2Carriages = 0;
+
     public Train() {}
 
     public Long getId() {
@@ -74,6 +80,22 @@ public class Train {
 
     public void setArrivalTime(LocalTime arrivalTime) {
         this.arrivalTime = arrivalTime;
+    }
+
+    public Integer getClass1Carriages() {
+        return class1Carriages;
+    }
+
+    public void setClass1Carriages(Integer class1Carriages) {
+        this.class1Carriages = class1Carriages;
+    }
+
+    public Integer getClass2Carriages() {
+        return class2Carriages;
+    }
+
+    public void setClass2Carriages(Integer class2Carriages) {
+        this.class2Carriages = class2Carriages;
     }
 
 }

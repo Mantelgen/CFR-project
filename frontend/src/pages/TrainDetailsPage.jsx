@@ -10,6 +10,32 @@ const TrainDetailsPage = () => {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
 
+  const buildComposition = (class1Count, class2Count) => {
+    const safeClass1 = Number.isFinite(class1Count) ? class1Count : 0;
+    const safeClass2 = Number.isFinite(class2Count) ? class2Count : 0;
+    const composition = [{ key: "loco", label: "Locomotive", short: "L", type: "locomotive" }];
+
+    for (let i = 0; i < safeClass1; i += 1) {
+      composition.push({
+        key: `c1-${i + 1}`,
+        label: `Class 1 Carriage ${i + 1}`,
+        short: "C1",
+        type: "class1",
+      });
+    }
+
+    for (let i = 0; i < safeClass2; i += 1) {
+      composition.push({
+        key: `c2-${i + 1}`,
+        label: `Class 2 Carriage ${i + 1}`,
+        short: "C2",
+        type: "class2",
+      });
+    }
+
+    return composition;
+  };
+
   useEffect(() => {
     const fetchTrain = async () => {
       try {
@@ -51,6 +77,11 @@ const TrainDetailsPage = () => {
     );
   }
 
+  const class1Carriages = train.class1Carriages ?? 0;
+  const class2Carriages = train.class2Carriages ?? 0;
+  const totalCarriages = train.totalCarriages ?? class1Carriages + class2Carriages;
+  const composition = buildComposition(class1Carriages, class2Carriages);
+
   return (
     <div className="cfr-page-bg">
       <TopTaskbar />
@@ -62,7 +93,29 @@ const TrainDetailsPage = () => {
             <p><strong>To:</strong> {train.arrivalStationName}</p>
             <p><strong>Departure Time:</strong> {train.departureTime}</p>
             <p><strong>Arrival Time:</strong> {train.arrivalTime}</p>
-            {/* Add more details as needed */}
+
+            <hr />
+            <h5 className="mb-3">Train Composition</h5>
+            <p><strong>Total Carriages:</strong> {totalCarriages}</p>
+            <p><strong>Class 1 Carriages:</strong> {class1Carriages}</p>
+            <p><strong>Class 2 Carriages:</strong> {class2Carriages}</p>
+
+            <div className="cfr-train-composition-strip" aria-label="Train composition image">
+              {composition.map((part) => (
+                <div
+                  key={part.key}
+                  className={`cfr-train-part cfr-train-part-${part.type}`}
+                  title={part.label}
+                >
+                  <span>{part.short}</span>
+                </div>
+              ))}
+            </div>
+
+            <small className="text-muted d-block mt-2">
+              Visual order: locomotive first, followed by Class 1 then Class 2 carriages.
+            </small>
+
             <button className="btn btn-secondary mt-3" onClick={() => navigate(-1)}>
               Back to Search
             </button>

@@ -54,7 +54,9 @@ public class TrainController {
             departureStationName,
             arrivalStationName,
             train.getDepartureTime() != null ? train.getDepartureTime().toString() : null,
-            train.getArrivalTime() != null ? train.getArrivalTime().toString() : null
+            train.getArrivalTime() != null ? train.getArrivalTime().toString() : null,
+            train.getClass1Carriages(),
+            train.getClass2Carriages()
         );
         return ResponseEntity.ok(dto);
         }
