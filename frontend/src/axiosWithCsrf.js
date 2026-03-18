@@ -3,16 +3,17 @@
 import axios from "axios";
 
 let csrfToken = null;
+let csrfHeaderName = "X-CSRF-TOKEN";
 
 // Fetch CSRF token from backend
-export async function fetchCsrfToken() {
   try {
     const response = await axios.get("/api/csrf", { withCredentials: true });
-    // Try header first, fallback to response.data
-    csrfToken = response.headers["x-csrf-token"] || response.data?.token || response.data?.csrfToken || null;
+    csrfToken = response.data?.token || null;
+    csrfHeaderName = response.data?.headerName || "X-CSRF-TOKEN";
     return csrfToken;
   } catch (err) {
     csrfToken = null;
+    csrfHeaderName = "X-CSRF-TOKEN";
     return null;
   }
 }
@@ -28,7 +29,7 @@ axiosWithCsrf.interceptors.request.use(
         await fetchCsrfToken();
       }
       if (csrfToken) {
-        config.headers["X-CSRF-TOKEN"] = csrfToken;
+        config.headers[csrfHeaderName] = csrfToken;
       }
     }
     return config;
