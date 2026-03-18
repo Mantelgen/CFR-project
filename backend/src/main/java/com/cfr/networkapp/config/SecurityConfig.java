@@ -53,6 +53,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/info").permitAll()
                 .requestMatchers("/api/mail/**").permitAll()
                 .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/csrf").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/trains/search").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/trains", "/api/trains/**").permitAll()
                 // Only authenticated users can POST/PUT/DELETE trains
