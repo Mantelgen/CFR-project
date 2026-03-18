@@ -1,41 +1,9 @@
-// axiosWithCsrf.js
-// Axios instance that automatically attaches CSRF token for POST/DELETE requests
 import axios from "axios";
 
-let csrfToken = null;
-let csrfHeaderName = "X-CSRF-TOKEN";
-
-// Fetch CSRF token from backend
-export async function fetchCsrfToken() {
-  try {
-    const response = await axios.get("/api/csrf", { withCredentials: true });
-    csrfToken = response.data?.token || null;
-    csrfHeaderName = response.data?.headerName || "X-CSRF-TOKEN";
-    return csrfToken;
-  } catch (err) {
-    csrfToken = null;
-    csrfHeaderName = "X-CSRF-TOKEN";
-    return null;
-  }
-}
-
-// Axios instance
-const axiosWithCsrf = axios.create({ withCredentials: true });
-
-// Request interceptor to add CSRF token
-axiosWithCsrf.interceptors.request.use(
-  async (config) => {
-    if (["post", "put", "delete", "patch"].includes(config.method)) {
-      if (!csrfToken) {
-        await fetchCsrfToken();
-      }
-      if (csrfToken) {
-        config.headers[csrfHeaderName] = csrfToken;
-      }
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
+const axiosWithCsrf = axios.create({
+  withCredentials: true,
+  xsrfCookieName: "XSRF-TOKEN",
+  xsrfHeaderName: "X-XSRF-TOKEN",
+});
 
 export default axiosWithCsrf;

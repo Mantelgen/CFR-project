@@ -8,6 +8,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -49,7 +50,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Map<String, String> request, jakarta.servlet.http.HttpServletRequest httpRequest) {
+    public ResponseEntity<?> login(@RequestBody Map<String, String> request, jakarta.servlet.http.HttpServletRequest httpRequest, jakarta.servlet.http.HttpServletResponse httpResponse) {
         try {
             String username = request.get("username");
             String password = request.get("password");
@@ -61,8 +62,8 @@ public class AuthController {
             org.springframework.security.core.context.SecurityContext context = org.springframework.security.core.context.SecurityContextHolder.createEmptyContext();
             context.setAuthentication(authentication);
             SecurityContextHolder.setContext(context);
-            jakarta.servlet.http.HttpSession session = httpRequest.getSession(true);
-            session.setAttribute(org.springframework.security.web.context.HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, context);
+            HttpSessionSecurityContextRepository securityContextRepository = new HttpSessionSecurityContextRepository();
+            securityContextRepository.saveContext(context, httpRequest, httpResponse);
 
             User user = userService.findByUsername(username)
                     .orElseThrow(() -> new RuntimeException("User not found"));
@@ -85,7 +86,7 @@ public class AuthController {
             Map<String, String> error = new HashMap<>();
             error.put("success", "false");
             error.put("error", e.getMessage());
-            return ResponseEntity.badRequest().body(error);
+            return ResponseEntity.status(401).body(error);
         }
     }
 
