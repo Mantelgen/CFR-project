@@ -49,7 +49,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Map<String, String> request) {
+    public ResponseEntity<?> login(@RequestBody Map<String, String> request, jakarta.servlet.http.HttpServletRequest httpRequest) {
         try {
             String username = request.get("username");
             String password = request.get("password");
@@ -58,10 +58,20 @@ public class AuthController {
             Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(username, password)
             );
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+            org.springframework.security.core.context.SecurityContext context = org.springframework.security.core.context.SecurityContextHolder.createEmptyContext();
+            context.setAuthentication(authentication);
+            SecurityContextHolder.setContext(context);
+            jakarta.servlet.http.HttpSession session = httpRequest.getSession(true);
+            session.setAttribute(org.springframework.security.web.context.HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, context);
 
             User user = userService.findByUsername(username)
                     .orElseThrow(() -> new RuntimeException("User not found"));
+            if (!Boolean.TRUE.equals(user.getIsConfirmed())) {
+                throw new RuntimeException("Account not confirmed yet. Check your email for the confirmation link.");
+            }
+            if (Boolean.FALSE.equals(user.getIsActive())) {
+                throw new RuntimeException("Account is disabled. Contact support.");
+            }
 
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
