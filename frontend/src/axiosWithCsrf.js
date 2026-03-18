@@ -6,6 +6,7 @@ let csrfToken = null;
 let csrfHeaderName = "X-CSRF-TOKEN";
 
 // Fetch CSRF token from backend
+export async function fetchCsrfToken() {
   try {
     const response = await axios.get("/api/csrf", { withCredentials: true });
     csrfToken = response.data?.token || null;
