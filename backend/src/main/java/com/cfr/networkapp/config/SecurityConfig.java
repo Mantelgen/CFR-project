@@ -38,7 +38,7 @@ public class SecurityConfig {
             // Enable CSRF except for stateless endpoints
             .csrf(csrf -> csrf
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                .ignoringRequestMatchers("/api/auth/**", "/api/info", "/api/status", "/api/mail/**")
+                .ignoringRequestMatchers("/api/auth/**", "/api/info", "/api/status", "/api/mail/**", "/api/reservations/**")
             )
             // Enable CORS
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
