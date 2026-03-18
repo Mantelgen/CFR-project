@@ -107,6 +107,8 @@ const TrainSearchPage = () => {
         userId,
         trainId: selectedTrain.id,
         numberOfSeats: parseInt(numberOfSeats),
+      }, {
+        withCredentials: true,
       });
 
       if (response.data.success) {
@@ -138,6 +140,8 @@ const TrainSearchPage = () => {
         userId: localStorage.getItem("userId"),
         reservationId,
         paymentMethod: "MOCK_CARD",
+      }, {
+        withCredentials: true,
       });
 
       if (response.data.success) {

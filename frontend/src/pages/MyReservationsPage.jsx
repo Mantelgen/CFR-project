@@ -25,6 +25,7 @@ const MyReservationsPage = () => {
     try {
       const response = await axios.get("/api/reservations/my-reservations", {
         params: { userId: localStorage.getItem("userId") },
+        withCredentials: true,
       });
       setReservations(response.data || []);
     } catch (err) {
@@ -40,6 +41,7 @@ const MyReservationsPage = () => {
       try {
         await axios.delete(`/api/reservations/${id}`, {
           params: { userId: localStorage.getItem("userId") },
+          withCredentials: true,
         });
         setReservations(
           reservations.filter((reservation) => reservation.id !== id)
