@@ -9,8 +9,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/trains")
@@ -56,10 +59,36 @@ public class TrainController {
             train.getDepartureTime() != null ? train.getDepartureTime().toString() : null,
             train.getArrivalTime() != null ? train.getArrivalTime().toString() : null,
             train.getClass1Carriages(),
-            train.getClass2Carriages()
+            train.getClass2Carriages(),
+            parseRouteStations(train.getRouteStations(), departureStationName, arrivalStationName)
         );
         return ResponseEntity.ok(dto);
         }
+
+    private List<String> parseRouteStations(String routeStations, String departureStationName, String arrivalStationName) {
+        List<String> parsed = new ArrayList<>();
+        if (routeStations != null && !routeStations.isBlank()) {
+            parsed = Arrays.stream(routeStations.split(","))
+                .map(String::trim)
+                .filter(name -> !name.isBlank())
+                .collect(Collectors.toCollection(ArrayList::new));
+        }
+
+        if (parsed.isEmpty()) {
+            parsed.add(departureStationName);
+            parsed.add(arrivalStationName);
+            return parsed;
+        }
+
+        if (!parsed.get(0).equalsIgnoreCase(departureStationName)) {
+            parsed.add(0, departureStationName);
+        }
+        String last = parsed.get(parsed.size() - 1);
+        if (!last.equalsIgnoreCase(arrivalStationName)) {
+            parsed.add(arrivalStationName);
+        }
+        return parsed;
+    }
 
     @PostMapping
     public ResponseEntity<Train> createTrain(@RequestBody Train train) {

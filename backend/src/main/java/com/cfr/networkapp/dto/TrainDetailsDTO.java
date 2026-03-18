@@ -1,5 +1,7 @@
 package com.cfr.networkapp.dto;
 
+import java.util.List;
+
 public class TrainDetailsDTO {
     private Long id;
     private String trainNumber;
@@ -10,10 +12,11 @@ public class TrainDetailsDTO {
     private Integer class1Carriages;
     private Integer class2Carriages;
     private Integer totalCarriages;
+    private List<String> routeStations;
 
     public TrainDetailsDTO() {}
 
-    public TrainDetailsDTO(Long id, String trainNumber, String departureStationName, String arrivalStationName, String departureTime, String arrivalTime, Integer class1Carriages, Integer class2Carriages) {
+    public TrainDetailsDTO(Long id, String trainNumber, String departureStationName, String arrivalStationName, String departureTime, String arrivalTime, Integer class1Carriages, Integer class2Carriages, List<String> routeStations) {
         this.id = id;
         this.trainNumber = trainNumber;
         this.departureStationName = departureStationName;
@@ -23,6 +26,7 @@ public class TrainDetailsDTO {
         this.class1Carriages = class1Carriages != null ? class1Carriages : 0;
         this.class2Carriages = class2Carriages != null ? class2Carriages : 0;
         this.totalCarriages = this.class1Carriages + this.class2Carriages;
+        this.routeStations = routeStations;
     }
 
     public Long getId() { return id; }
@@ -43,4 +47,6 @@ public class TrainDetailsDTO {
     public void setClass2Carriages(Integer class2Carriages) { this.class2Carriages = class2Carriages; }
     public Integer getTotalCarriages() { return totalCarriages; }
     public void setTotalCarriages(Integer totalCarriages) { this.totalCarriages = totalCarriages; }
+    public List<String> getRouteStations() { return routeStations; }
+    public void setRouteStations(List<String> routeStations) { this.routeStations = routeStations; }
 }

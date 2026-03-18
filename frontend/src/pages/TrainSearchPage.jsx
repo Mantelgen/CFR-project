@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axiosWithCsrf from "../axiosWithCsrf";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import TopTaskbar from "../components/TopTaskbar";
 
@@ -17,6 +17,7 @@ const TrainSearchPage = () => {
   const [isPaying, setIsPaying] = useState(false);
   const [reservationId, setReservationId] = useState(null);
   const [backendInfo, setBackendInfo] = useState("Connecting...");
+  const [stationSuggestions, setStationSuggestions] = useState([]);
   const [paymentForm, setPaymentForm] = useState({
     cardHolder: "",
     cardNumber: "",
@@ -24,6 +25,7 @@ const TrainSearchPage = () => {
     cvv: "",
   });
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const userId = localStorage.getItem("userId");
@@ -57,6 +59,30 @@ const TrainSearchPage = () => {
 
     fetchBackendInfo();
   }, []);
+
+  useEffect(() => {
+    const fetchStationSuggestions = async () => {
+      try {
+        const response = await axiosWithCsrf.get("/api/stations", { timeout: 5000 });
+        const names = Array.isArray(response.data) ? response.data : [];
+        setStationSuggestions(names);
+      } catch (err) {
+        setStationSuggestions([]);
+      }
+    };
+
+    fetchStationSuggestions();
+  }, []);
+
+  useEffect(() => {
+    const state = location.state || {};
+    if (state.from && typeof state.from === "string") {
+      setFrom(state.from);
+    }
+    if (state.to && typeof state.to === "string") {
+      setTo(state.to);
+    }
+  }, [location.state]);
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -191,6 +217,7 @@ const TrainSearchPage = () => {
                   type="text"
                   className="form-control"
                   id="from"
+                  list="station-suggestions"
                   placeholder="e.g., Cluj"
                   value={from}
                   onChange={(e) => setFrom(e.target.value)}
@@ -204,6 +231,7 @@ const TrainSearchPage = () => {
                   type="text"
                   className="form-control"
                   id="to"
+                  list="station-suggestions"
                   placeholder="e.g., Bucuresti"
                   value={to}
                   onChange={(e) => setTo(e.target.value)}
@@ -220,6 +248,11 @@ const TrainSearchPage = () => {
               </div>
             </div>
           </form>
+          <datalist id="station-suggestions">
+            {stationSuggestions.map((stationName) => (
+              <option key={stationName} value={stationName} />
+            ))}
+          </datalist>
         </div>
       </div>
 

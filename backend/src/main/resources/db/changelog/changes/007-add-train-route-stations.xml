@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="008-add-route-stations-column" author="copilot">
+        <addColumn tableName="trains">
+            <column name="route_stations" type="VARCHAR(2000)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="009-seed-route-stations" author="copilot">
+        <sql>
+            UPDATE trains SET route_stations = 'Cluj Napoca,Gherla,Dej Călători,Beclean pe Someș,Năsăud,Ilva Mică,Vatra Dornei,Suceava,Pașcani,Târgu Frumos,Iași' WHERE train_number = 'IR1745';
+            UPDATE trains SET route_stations = 'Brașov,Sighișoara,Mediaș,Teiuș,Cluj Napoca' WHERE train_number = 'IR1821';
+            UPDATE trains SET route_stations = 'București Nord,Ploiești Sud,Buzău,Focșani,Bacău,Roman,Pașcani,Suceava' WHERE train_number = 'R3002';
+            UPDATE trains SET route_stations = 'Cluj Napoca,Turda,Aiud,Alba Iulia,Sebeș,Sibiu,Brașov' WHERE train_number = 'IR1590';
+            UPDATE trains SET route_stations = 'Brașov,Sinaia,Ploiești Vest,București Nord' WHERE train_number = 'R4010';
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

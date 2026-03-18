@@ -49,6 +49,9 @@ public class TrainService {
         if (train.getClass2Carriages() == null) {
             train.setClass2Carriages(0);
         }
+        if (train.getRouteStations() != null) {
+            train.setRouteStations(train.getRouteStations().trim());
+        }
         return trainRepository.save(train);
     }
 
@@ -82,6 +85,9 @@ public class TrainService {
                 throw new IllegalArgumentException("Class 2 carriages cannot be negative");
             }
             train.setClass2Carriages(trainDetails.getClass2Carriages());
+        }
+        if (trainDetails.getRouteStations() != null) {
+            train.setRouteStations(trainDetails.getRouteStations().trim());
         }
 
         return trainRepository.save(train);

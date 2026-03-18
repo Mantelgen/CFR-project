@@ -32,6 +32,9 @@ public class Train {
     @Column(name = "class_2_carriages")
     private Integer class2Carriages = 0;
 
+    @Column(name = "route_stations")
+    private String routeStations;
+
     public Train() {}
 
     public Long getId() {
@@ -96,6 +99,14 @@ public class Train {
 
     public void setClass2Carriages(Integer class2Carriages) {
         this.class2Carriages = class2Carriages;
+    }
+
+    public String getRouteStations() {
+        return routeStations;
+    }
+
+    public void setRouteStations(String routeStations) {
+        this.routeStations = routeStations;
     }
 
 }

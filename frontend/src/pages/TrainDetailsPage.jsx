@@ -81,6 +81,9 @@ const TrainDetailsPage = () => {
   const class2Carriages = train.class2Carriages ?? 0;
   const totalCarriages = train.totalCarriages ?? class1Carriages + class2Carriages;
   const composition = buildComposition(class1Carriages, class2Carriages);
+  const routeStations = Array.isArray(train.routeStations) && train.routeStations.length > 0
+    ? train.routeStations
+    : [train.departureStationName, train.arrivalStationName];
 
   return (
     <div className="cfr-page-bg">
@@ -115,6 +118,17 @@ const TrainDetailsPage = () => {
             <small className="text-muted d-block mt-2">
               Visual order: locomotive first, followed by Class 1 then Class 2 carriages.
             </small>
+
+            <hr />
+            <h5 className="mb-3">Stations On Route</h5>
+            <ol className="cfr-route-timeline">
+              {routeStations.map((stationName, index) => (
+                <li key={`${stationName}-${index}`} className="cfr-route-stop">
+                  <span className="cfr-route-dot" aria-hidden="true"></span>
+                  <span>{stationName}</span>
+                </li>
+              ))}
+            </ol>
 
             <button className="btn btn-secondary mt-3" onClick={() => navigate(-1)}>
               Back to Search

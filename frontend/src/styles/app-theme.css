@@ -131,6 +131,77 @@ body {
   animation: cfrSlideIn 0.65s ease-out;
 }
 
+.cfr-home-hero {
+  position: relative;
+  overflow: hidden;
+  border-radius: 18px;
+  padding: 1.5rem;
+  background: linear-gradient(145deg, #0f4f9f 0%, #0d61bb 40%, #1374ce 100%);
+  box-shadow: 0 16px 38px rgba(11, 62, 138, 0.28);
+}
+
+.cfr-home-overlay {
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 70% 35%, rgba(255, 255, 255, 0.18), transparent 33%),
+    linear-gradient(transparent 0%, rgba(8, 41, 87, 0.4) 100%);
+  pointer-events: none;
+}
+
+.cfr-home-copy {
+  position: relative;
+  z-index: 2;
+  color: #fff;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.cfr-cta-orange {
+  color: #fff;
+  border: 0;
+  font-weight: 700;
+  background: linear-gradient(130deg, #ff8a2d 0%, #ff6d1f 100%);
+}
+
+.cfr-cta-orange-outline {
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.cfr-booking-card {
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.cfr-booking-title {
+  color: #0f4f9f;
+  font-weight: 800;
+  margin-bottom: 0.4rem;
+}
+
+.cfr-promo-card {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 14px;
+  background: linear-gradient(155deg, rgba(12, 49, 102, 0.84) 0%, rgba(18, 94, 171, 0.84) 100%);
+  color: #fff;
+}
+
+.cfr-promo-badge {
+  display: inline-block;
+  background: rgba(255, 194, 32, 0.92);
+  color: #0d2b5c;
+  font-weight: 800;
+  border-radius: 999px;
+  padding: 0.22rem 0.65rem;
+  font-size: 0.78rem;
+}
+
 .cfr-landing-hero::after {
   content: "";
   position: absolute;
@@ -262,6 +333,32 @@ body {
 .cfr-train-part-class2 {
   background: linear-gradient(130deg, #f2b600 0%, #ec9800 100%);
   color: #10213f;
+}
+
+.cfr-route-timeline {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-left: 2px solid rgba(15, 79, 159, 0.3);
+}
+
+.cfr-route-stop {
+  position: relative;
+  margin-left: 0.8rem;
+  padding: 0.28rem 0 0.28rem 0.8rem;
+  color: #15407e;
+  font-weight: 600;
+}
+
+.cfr-route-dot {
+  position: absolute;
+  left: -0.98rem;
+  top: 0.73rem;
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: #0f4f9f;
+  border: 2px solid #fff;
 }
 
 @keyframes cfrSlideIn {

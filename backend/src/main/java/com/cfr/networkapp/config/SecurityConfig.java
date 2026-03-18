@@ -59,6 +59,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/actuator/health", "/actuator/info", "/actuator/prometheus").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/csrf").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/stations", "/api/stations/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/trains/search").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/trains", "/api/trains/**").permitAll()
                 // Only authenticated users can POST/PUT/DELETE trains

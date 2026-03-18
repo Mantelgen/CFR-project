@@ -7,6 +7,9 @@ const MainDashboardPage = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [backendInfo, setBackendInfo] = useState("Connecting...");
+  const [quickFrom, setQuickFrom] = useState("");
+  const [quickTo, setQuickTo] = useState("");
+  const [stationSuggestions, setStationSuggestions] = useState([]);
   const [stats, setStats] = useState({
     totalTrains: 0,
     totalReservations: 0,
@@ -76,6 +79,20 @@ const MainDashboardPage = () => {
     loadDashboard();
   }, []);
 
+  useEffect(() => {
+    const fetchStationSuggestions = async () => {
+      try {
+        const response = await axios.get("/api/stations", { timeout: 6000 });
+        const stations = Array.isArray(response.data) ? response.data : [];
+        setStationSuggestions(stations);
+      } catch (err) {
+        setStationSuggestions([]);
+      }
+    };
+
+    fetchStationSuggestions();
+  }, []);
+
 
   // Manual refresh handler: allows user to refresh dashboard data
   const handleRefresh = () => {
@@ -83,52 +100,107 @@ const MainDashboardPage = () => {
     loadDashboard();
   };
 
+  const handleQuickSearch = () => {
+    navigate("/search", { state: { from: quickFrom, to: quickTo } });
+  };
+
   return (
     <div className="cfr-page-bg">
       <TopTaskbar />
       <main className="cfr-shell container-fluid">
-        <section className="cfr-landing-hero p-4 p-md-5 mb-4">
-          <div className="row align-items-center">
-            <div className="col-lg-7">
-              <span className="cfr-muted-chip mb-3 d-inline-block">Romanian Rail Platform</span>
-              <h1 className="display-5 fw-bold mb-3">Plan faster rail trips with a live CFR dashboard</h1>
-              <p className="lead mb-4">
-                Track service availability, check your reservation status, and book in a modern journey flow.
-              </p>
-              <div className="d-flex flex-wrap gap-2">
-                <button className="btn cfr-primary text-white px-4" onClick={() => navigate("/search")} type="button">
-                  Start Search
-                </button>
-                <button className="btn btn-light px-4" onClick={() => navigate("/my-reservations")} type="button">
-                  View Reservations
-                </button>
-              </div>
-            </div>
-            <div className="col-lg-5 mt-4 mt-lg-0">
-              <div className="cfr-status-panel">
-                <div className="d-flex justify-content-between align-items-center mb-2">
-                  <h5 className="mb-0">System Feed</h5>
-                  <button
-                    className="btn btn-sm btn-outline-light ms-2"
-                    style={{ fontSize: "0.9rem" }}
-                    onClick={handleRefresh}
-                    disabled={isLoading}
-                    title="Refresh dashboard"
-                  >
-                    {isLoading ? (
-                      <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                    ) : (
-                      <span>&#x21bb;</span>
-                    )}
+        <section className="cfr-home-hero mb-4">
+          <div className="cfr-home-overlay"></div>
+          <div className="row g-4 align-items-stretch position-relative">
+            <div className="col-xl-6">
+              <div className="cfr-home-copy">
+                <span className="cfr-muted-chip mb-3 d-inline-block">Romanian Rail Platform</span>
+                <h1 className="display-5 fw-bold mb-3">Cumpara bilete de tren online</h1>
+                <p className="lead mb-4">
+                  Gaseste rapid curse interne, verifica disponibilitatea si rezerva in cativa pasi.
+                </p>
+                <div className="d-flex flex-wrap gap-2">
+                  <button className="btn cfr-cta-orange px-4" onClick={() => navigate("/search")} type="button">
+                    Trafic intern
+                  </button>
+                  <button className="btn cfr-cta-orange-outline px-4" onClick={() => navigate("/search")} type="button">
+                    Trafic international
                   </button>
                 </div>
-                <p className="mb-1">{backendInfo}</p>
-                <small className="text-white-50">
-                  {isLoading ? "Refreshing dashboard metrics..." : "Dashboard updated just now."}
-                </small>
+              </div>
+            </div>
+            <div className="col-xl-6">
+              <div className="row g-3">
+                <div className="col-12 col-lg-6">
+                  <div className="card cfr-booking-card h-100">
+                    <div className="card-body">
+                      <h5 className="cfr-booking-title">Mers Tren Trafic Intern</h5>
+                      <label className="form-label mt-3">De la</label>
+                      <input
+                        className="form-control"
+                        list="dashboard-station-suggestions"
+                        value={quickFrom}
+                        onChange={(e) => setQuickFrom(e.target.value)}
+                        placeholder="Introdu statia de plecare"
+                      />
+                      <label className="form-label mt-3">Pana la</label>
+                      <input
+                        className="form-control"
+                        list="dashboard-station-suggestions"
+                        value={quickTo}
+                        onChange={(e) => setQuickTo(e.target.value)}
+                        placeholder="Introdu statia de sosire"
+                      />
+                      <button className="btn cfr-primary text-white w-100 mt-4" onClick={handleQuickSearch} type="button">
+                        Cauta
+                      </button>
+                      <datalist id="dashboard-station-suggestions">
+                        {stationSuggestions.map((stationName) => (
+                          <option key={stationName} value={stationName} />
+                        ))}
+                      </datalist>
+                    </div>
+                  </div>
+                </div>
+                <div className="col-12 col-lg-6">
+                  <div className="card cfr-promo-card h-100">
+                    <div className="card-body d-flex flex-column justify-content-between">
+                      <div>
+                        <p className="cfr-promo-badge mb-2">Oferta Speciala</p>
+                        <h5 className="mb-3">Calatoreste inteligent cu reduceri la rezervari online</h5>
+                        <p className="mb-0">Activeaza cautarea rapida si confirma plata direct din platforma.</p>
+                      </div>
+                      <button className="btn btn-light mt-3" onClick={() => navigate("/search")} type="button">
+                        Cumpara acum
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
+        </section>
+
+        <section className="cfr-status-panel p-3 p-md-4 mb-4">
+          <div className="d-flex justify-content-between align-items-center mb-2">
+            <h5 className="mb-0">System Feed</h5>
+            <button
+              className="btn btn-sm btn-outline-light ms-2"
+              style={{ fontSize: "0.9rem" }}
+              onClick={handleRefresh}
+              disabled={isLoading}
+              title="Refresh dashboard"
+            >
+              {isLoading ? (
+                <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+              ) : (
+                <span>&#x21bb;</span>
+              )}
+            </button>
+          </div>
+          <p className="mb-1">{backendInfo}</p>
+          <small className="text-white-50">
+            {isLoading ? "Refreshing dashboard metrics..." : "Dashboard updated just now."}
+          </small>
         </section>
 
         <section className="row g-3 g-md-4 cfr-fade-up">
