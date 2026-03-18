@@ -35,7 +35,7 @@ const TrainSearchPage = () => {
   useEffect(() => {
     const fetchBackendInfo = async () => {
       try {
-        const response = await axios.get("/api/info", {
+        const response = await axiosWithCsrf.get("/api/info", {
           timeout: 5000,
           params: { _ts: Date.now() },
           headers: {
@@ -72,7 +72,7 @@ const TrainSearchPage = () => {
     }
 
     try {
-      const response = await axios.get(`/api/trains/search`, {
+      const response = await axiosWithCsrf.get(`/api/trains/search`, {
         params: { from, to },
       });
       setTrains(response.data || []);
