@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import axiosWithCsrf from "../axiosWithCsrf";
 import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import TopTaskbar from "../components/TopTaskbar";
@@ -23,9 +23,8 @@ const MyReservationsPage = () => {
 
   const fetchReservations = async () => {
     try {
-      const response = await axios.get("/api/reservations/my-reservations", {
+      const response = await axiosWithCsrf.get("/api/reservations/my-reservations", {
         params: { userId: localStorage.getItem("userId") },
-        withCredentials: true,
       });
       setReservations(response.data || []);
     } catch (err) {
@@ -39,9 +38,8 @@ const MyReservationsPage = () => {
     if (window.confirm("Are you sure you want to cancel this reservation?")) {
       setCancellingId(id);
       try {
-        await axios.delete(`/api/reservations/${id}`, {
+        await axiosWithCsrf.delete(`/api/reservations/${id}`, {
           params: { userId: localStorage.getItem("userId") },
-          withCredentials: true,
         });
         setReservations(
           reservations.filter((reservation) => reservation.id !== id)

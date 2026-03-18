@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import axiosWithCsrf from "../axiosWithCsrf";
 import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import TopTaskbar from "../components/TopTaskbar";
@@ -103,12 +103,10 @@ const TrainSearchPage = () => {
     const userId = localStorage.getItem("userId");
 
     try {
-      const response = await axios.post("/api/reservations/book", {
+      const response = await axiosWithCsrf.post("/api/reservations/book", {
         userId,
         trainId: selectedTrain.id,
         numberOfSeats: parseInt(numberOfSeats),
-      }, {
-        withCredentials: true,
       });
 
       if (response.data.success) {
@@ -136,12 +134,10 @@ const TrainSearchPage = () => {
     }
 
     try {
-      const response = await axios.post("/api/reservations/pay", {
+      const response = await axiosWithCsrf.post("/api/reservations/pay", {
         userId: localStorage.getItem("userId"),
         reservationId,
         paymentMethod: "MOCK_CARD",
-      }, {
-        withCredentials: true,
       });
 
       if (response.data.success) {
