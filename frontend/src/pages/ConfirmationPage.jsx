@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -11,7 +11,7 @@ const ConfirmationPage = ({ type = "email" }) => {
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
-  const confirmAction = async (token) => {
+  const confirmAction = useCallback(async (token) => {
     try {
       let endpoint;
       let successMsg;
@@ -47,7 +47,7 @@ const ConfirmationPage = ({ type = "email" }) => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [navigate, type]);
 
   useEffect(() => {
     const token = searchParams.get("token");
@@ -60,7 +60,7 @@ const ConfirmationPage = ({ type = "email" }) => {
     }
 
     confirmAction(token);
-  }, [searchParams]);
+  }, [confirmAction, searchParams]);
 
   if (isLoading) {
     return (

@@ -102,16 +102,7 @@ public class AuthController {
             response.put("lastName", user.getLastName());
             return ResponseEntity.ok(response);
         }
-        return ResponseEntity.ok(null);
-    }
-
-    @PostMapping("/logout")
-    public ResponseEntity<?> logout() {
-        SecurityContextHolder.clearContext();
-        Map<String, String> response = new HashMap<>();
-        response.put("success", "true");
-        response.put("message", "Logged out successfully");
-        return ResponseEntity.ok(response);
+        return ResponseEntity.status(401).body(Map.of("error", "User not authenticated"));
     }
 
     @PostMapping("/confirm-email")

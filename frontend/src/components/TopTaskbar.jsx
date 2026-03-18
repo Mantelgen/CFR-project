@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import axios from "axios";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
 const TopTaskbar = () => {
@@ -12,9 +13,15 @@ const TopTaskbar = () => {
   const isActive = (path) =>
     path === "/" ? location.pathname === "/" : location.pathname.startsWith(path);
 
-  const handleLogout = () => {
-    localStorage.clear();
-    navigate("/login");
+  const handleLogout = async () => {
+    try {
+      await axios.post("/api/auth/logout", {}, { withCredentials: true, timeout: 8000 });
+    } catch (err) {
+      // Proceed with local cleanup even if server logout fails.
+    } finally {
+      localStorage.clear();
+      navigate("/login");
+    }
   };
 
   return (
