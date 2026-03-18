@@ -54,6 +54,12 @@ public class AuthController {
             String username = request.get("username");
             String password = request.get("password");
 
+            // Authenticate user with Spring Security
+            Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(username, password)
+            );
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
             User user = userService.findByUsername(username)
                     .orElseThrow(() -> new RuntimeException("User not found"));
 

@@ -34,7 +34,7 @@ const AuthPage = ({ isLogin = true }) => {
         ? { username: formData.username, password: formData.password }
         : formData;
 
-      const response = await axios.post(endpoint, data, { timeout: 10000 });
+      const response = await axios.post(endpoint, data, { timeout: 10000, withCredentials: true });
 
       if (response.data.success) {
         setSuccess(response.data.message);
