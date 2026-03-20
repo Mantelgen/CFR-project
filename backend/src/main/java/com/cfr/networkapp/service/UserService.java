@@ -43,6 +43,8 @@ public class UserService implements UserDetailsService {
         }
 
         User user = new User(username, email, passwordEncoder.encode(password), firstName, lastName);
+        user.setIsActive(true);
+        user.setIsConfirmed(false);
         user.setConfirmationToken(UUID.randomUUID().toString());
         
         User saved = userRepository.save(user);

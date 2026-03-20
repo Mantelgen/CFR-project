@@ -113,6 +113,7 @@ services:
       APP_COMPLAINTS_RECIPIENT: ${APP_COMPLAINTS_RECIPIENT:-complaints@cfr.local.com}
       APP_MAIL_FROM: ${APP_MAIL_FROM:-noreply@cfr.local.com}
       APP_MAIL_COMPLAINTS_FROM: ${APP_MAIL_COMPLAINTS_FROM:-complaint@cfr.local.com}
+      APP_PUBLIC_BASE_URL: ${APP_PUBLIC_BASE_URL:-https://cfr.local}
     depends_on:
       migration:
         condition: service_completed_successfully
