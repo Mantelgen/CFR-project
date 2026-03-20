@@ -110,6 +110,7 @@ const MyReservationsPage = () => {
                   <tr>
                     <th>Train Number</th>
                     <th>Seats</th>
+                    <th>Seat Numbers</th>
                     <th>Status</th>
                     <th>Confirmation</th>
                     <th>Booked On</th>
@@ -123,6 +124,7 @@ const MyReservationsPage = () => {
                         {reservation.train?.trainNumber || "N/A"}
                       </td>
                       <td>{reservation.numberOfSeats}</td>
+                      <td>{reservation.selectedSeatNumbers || "Auto-assigned"}</td>
                       <td>
                         <span
                           className={`badge bg-${

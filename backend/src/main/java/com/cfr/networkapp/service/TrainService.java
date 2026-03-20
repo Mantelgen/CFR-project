@@ -52,6 +52,15 @@ public class TrainService {
         if (train.getRouteStations() != null) {
             train.setRouteStations(train.getRouteStations().trim());
         }
+        if (train.getSeatsPerCarriage() == null) {
+            train.setSeatsPerCarriage(60);
+        }
+        if (train.getSeatsPerCarriage() <= 0) {
+            throw new IllegalArgumentException("Seats per carriage must be greater than 0");
+        }
+        if (train.getFacilities() != null) {
+            train.setFacilities(train.getFacilities().trim());
+        }
         return trainRepository.save(train);
     }
 
@@ -88,6 +97,15 @@ public class TrainService {
         }
         if (trainDetails.getRouteStations() != null) {
             train.setRouteStations(trainDetails.getRouteStations().trim());
+        }
+        if (trainDetails.getSeatsPerCarriage() != null) {
+            if (trainDetails.getSeatsPerCarriage() <= 0) {
+                throw new IllegalArgumentException("Seats per carriage must be greater than 0");
+            }
+            train.setSeatsPerCarriage(trainDetails.getSeatsPerCarriage());
+        }
+        if (trainDetails.getFacilities() != null) {
+            train.setFacilities(trainDetails.getFacilities().trim());
         }
 
         return trainRepository.save(train);

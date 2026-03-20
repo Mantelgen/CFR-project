@@ -84,6 +84,7 @@ const TrainDetailsPage = () => {
   const routeStations = Array.isArray(train.routeStations) && train.routeStations.length > 0
     ? train.routeStations
     : [train.departureStationName, train.arrivalStationName];
+  const facilities = Array.isArray(train.facilities) ? train.facilities : [];
 
   return (
     <div className="cfr-page-bg">
@@ -102,6 +103,9 @@ const TrainDetailsPage = () => {
             <p><strong>Total Carriages:</strong> {totalCarriages}</p>
             <p><strong>Class 1 Carriages:</strong> {class1Carriages}</p>
             <p><strong>Class 2 Carriages:</strong> {class2Carriages}</p>
+            <p><strong>Seats per Carriage:</strong> {train.seatsPerCarriage ?? 60}</p>
+            <p><strong>Total Seats:</strong> {train.totalSeats ?? "N/A"}</p>
+            <p><strong>Available Seats:</strong> {train.availableSeats ?? "N/A"}</p>
 
             <div className="cfr-train-composition-strip" aria-label="Train composition image">
               {composition.map((part) => (
@@ -118,6 +122,20 @@ const TrainDetailsPage = () => {
             <small className="text-muted d-block mt-2">
               Visual order: locomotive first, followed by Class 1 then Class 2 carriages.
             </small>
+
+            <hr />
+            <h5 className="mb-3">Facilities</h5>
+            {facilities.length === 0 ? (
+              <p className="text-muted">No facilities listed for this train.</p>
+            ) : (
+              <div className="d-flex gap-2 flex-wrap mb-3">
+                {facilities.map((facility) => (
+                  <span key={facility} className="badge rounded-pill text-bg-light border">
+                    {facility}
+                  </span>
+                ))}
+              </div>
+            )}
 
             <hr />
             <h5 className="mb-3">Stations On Route</h5>

@@ -11,7 +11,9 @@ const TrainSearchPage = () => {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [selectedTrain, setSelectedTrain] = useState(null);
+  const [selectedTrainDetails, setSelectedTrainDetails] = useState(null);
   const [numberOfSeats, setNumberOfSeats] = useState(1);
+  const [selectedSeatNumbersInput, setSelectedSeatNumbersInput] = useState("");
   const [isBooking, setIsBooking] = useState(false);
   const [bookingSuccess, setBookingSuccess] = useState(false);
   const [isPaying, setIsPaying] = useState(false);
@@ -119,9 +121,26 @@ const TrainSearchPage = () => {
       return;
     }
 
-    setSelectedTrain(train);
-    setNumberOfSeats(1);
-    setIsBooking(true);
+    try {
+      const detailsResponse = await axiosWithCsrf.get(`/api/trains/${train.id}`);
+      setSelectedTrain(train);
+      setSelectedTrainDetails(detailsResponse.data || null);
+      setNumberOfSeats(1);
+      setSelectedSeatNumbersInput("");
+      setIsBooking(true);
+    } catch (err) {
+      setError("Could not load seat availability for this train.");
+    }
+  };
+
+  const parseSelectedSeatNumbers = () => {
+    if (!selectedSeatNumbersInput.trim()) {
+      return [];
+    }
+    return selectedSeatNumbersInput
+      .split(",")
+      .map((value) => parseInt(value.trim(), 10))
+      .filter((value) => Number.isInteger(value));
   };
 
   const submitBooking = async () => {
@@ -133,11 +152,13 @@ const TrainSearchPage = () => {
         userId,
         trainId: selectedTrain.id,
         numberOfSeats: parseInt(numberOfSeats),
+        selectedSeatNumbers: parseSelectedSeatNumbers(),
       });
 
       if (response.data.success) {
         setReservationId(response.data.reservationId);
         setSelectedTrain(null);
+        setSelectedTrainDetails(null);
         setIsBooking(false);
         setIsPaying(true);
       }
@@ -289,6 +310,7 @@ const TrainSearchPage = () => {
                     <th>Train Number</th>
                     <th>Departure</th>
                     <th>Arrival</th>
+                    <th>Facilities</th>
                     <th>Action</th>
                   </tr>
                 </thead>
@@ -298,6 +320,7 @@ const TrainSearchPage = () => {
                       <td className="fw-bold">{train.trainNumber}</td>
                       <td>{train.departureTime}</td>
                       <td>{train.arrivalTime}</td>
+                      <td>{train.facilities || "Standard"}</td>
                       <td>
                         <button
                           className="btn btn-sm cfr-accent me-2"
@@ -349,6 +372,12 @@ const TrainSearchPage = () => {
                 <p>
                   <strong>Arrival:</strong> {selectedTrain.arrivalTime}
                 </p>
+                <p>
+                  <strong>Total seats:</strong> {selectedTrainDetails?.totalSeats ?? "-"}
+                </p>
+                <p>
+                  <strong>Currently available:</strong> {selectedTrainDetails?.availableSeats ?? "-"}
+                </p>
                 <div className="mb-3">
                   <label htmlFor="seats" className="form-label">
                     Number of Seats
@@ -362,6 +391,22 @@ const TrainSearchPage = () => {
                     value={numberOfSeats}
                     onChange={(e) => setNumberOfSeats(e.target.value)}
                   />
+                </div>
+                <div className="mb-3">
+                  <label htmlFor="selectedSeatNumbers" className="form-label">
+                    Seat Numbers (optional)
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    id="selectedSeatNumbers"
+                    value={selectedSeatNumbersInput}
+                    onChange={(e) => setSelectedSeatNumbersInput(e.target.value)}
+                    placeholder="e.g. 12, 13"
+                  />
+                  <small className="text-muted">
+                    Comma-separated seat numbers. Leave blank for automatic assignment.
+                  </small>
                 </div>
               </div>
               <div className="modal-footer">

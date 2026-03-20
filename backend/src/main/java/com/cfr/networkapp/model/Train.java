@@ -35,6 +35,12 @@ public class Train {
     @Column(name = "route_stations")
     private String routeStations;
 
+    @Column(name = "seats_per_carriage")
+    private Integer seatsPerCarriage = 60;
+
+    @Column(name = "facilities")
+    private String facilities;
+
     public Train() {}
 
     public Long getId() {
@@ -107,6 +113,22 @@ public class Train {
 
     public void setRouteStations(String routeStations) {
         this.routeStations = routeStations;
+    }
+
+    public Integer getSeatsPerCarriage() {
+        return seatsPerCarriage;
+    }
+
+    public void setSeatsPerCarriage(Integer seatsPerCarriage) {
+        this.seatsPerCarriage = seatsPerCarriage;
+    }
+
+    public String getFacilities() {
+        return facilities;
+    }
+
+    public void setFacilities(String facilities) {
+        this.facilities = facilities;
     }
 
 }

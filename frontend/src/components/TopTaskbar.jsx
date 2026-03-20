@@ -72,6 +72,12 @@ const TopTaskbar = () => {
               >
                 My Reservations
               </Link>
+              <Link
+                to="/complaints"
+                className={`cfr-nav-link ${isActive("/complaints") ? "active" : ""}`}
+              >
+                Complaints
+              </Link>
 
               {isAuthenticated ? (
                 <>

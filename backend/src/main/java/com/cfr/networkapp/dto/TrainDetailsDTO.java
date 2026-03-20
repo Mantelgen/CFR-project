@@ -12,11 +12,15 @@ public class TrainDetailsDTO {
     private Integer class1Carriages;
     private Integer class2Carriages;
     private Integer totalCarriages;
+    private Integer seatsPerCarriage;
+    private Integer totalSeats;
+    private Integer availableSeats;
     private List<String> routeStations;
+    private List<String> facilities;
 
     public TrainDetailsDTO() {}
 
-    public TrainDetailsDTO(Long id, String trainNumber, String departureStationName, String arrivalStationName, String departureTime, String arrivalTime, Integer class1Carriages, Integer class2Carriages, List<String> routeStations) {
+    public TrainDetailsDTO(Long id, String trainNumber, String departureStationName, String arrivalStationName, String departureTime, String arrivalTime, Integer class1Carriages, Integer class2Carriages, Integer seatsPerCarriage, Integer totalSeats, Integer availableSeats, List<String> routeStations, List<String> facilities) {
         this.id = id;
         this.trainNumber = trainNumber;
         this.departureStationName = departureStationName;
@@ -26,7 +30,11 @@ public class TrainDetailsDTO {
         this.class1Carriages = class1Carriages != null ? class1Carriages : 0;
         this.class2Carriages = class2Carriages != null ? class2Carriages : 0;
         this.totalCarriages = this.class1Carriages + this.class2Carriages;
+        this.seatsPerCarriage = seatsPerCarriage;
+        this.totalSeats = totalSeats;
+        this.availableSeats = availableSeats;
         this.routeStations = routeStations;
+        this.facilities = facilities;
     }
 
     public Long getId() { return id; }
@@ -47,6 +55,14 @@ public class TrainDetailsDTO {
     public void setClass2Carriages(Integer class2Carriages) { this.class2Carriages = class2Carriages; }
     public Integer getTotalCarriages() { return totalCarriages; }
     public void setTotalCarriages(Integer totalCarriages) { this.totalCarriages = totalCarriages; }
+    public Integer getSeatsPerCarriage() { return seatsPerCarriage; }
+    public void setSeatsPerCarriage(Integer seatsPerCarriage) { this.seatsPerCarriage = seatsPerCarriage; }
+    public Integer getTotalSeats() { return totalSeats; }
+    public void setTotalSeats(Integer totalSeats) { this.totalSeats = totalSeats; }
+    public Integer getAvailableSeats() { return availableSeats; }
+    public void setAvailableSeats(Integer availableSeats) { this.availableSeats = availableSeats; }
     public List<String> getRouteStations() { return routeStations; }
     public void setRouteStations(List<String> routeStations) { this.routeStations = routeStations; }
+    public List<String> getFacilities() { return facilities; }
+    public void setFacilities(List<String> facilities) { this.facilities = facilities; }
 }

@@ -55,6 +55,15 @@ public class AuthController {
             String username = request.get("username");
             String password = request.get("password");
 
+            User user = userService.findByUsername(username)
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+            if (!Boolean.TRUE.equals(user.getIsConfirmed())) {
+                return ResponseEntity.status(403).body(Map.of("success", "false", "error", "Account not confirmed yet. Check your email for the confirmation link."));
+            }
+            if (Boolean.FALSE.equals(user.getIsActive())) {
+                return ResponseEntity.status(403).body(Map.of("success", "false", "error", "Account is disabled. Contact support."));
+            }
+
             // Authenticate user with Spring Security
             Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(username, password)
@@ -65,15 +74,6 @@ public class AuthController {
             HttpSessionSecurityContextRepository securityContextRepository = new HttpSessionSecurityContextRepository();
             securityContextRepository.saveContext(context, httpRequest, httpResponse);
 
-            User user = userService.findByUsername(username)
-                    .orElseThrow(() -> new RuntimeException("User not found"));
-            if (!Boolean.TRUE.equals(user.getIsConfirmed())) {
-                throw new RuntimeException("Account not confirmed yet. Check your email for the confirmation link.");
-            }
-            if (Boolean.FALSE.equals(user.getIsActive())) {
-                throw new RuntimeException("Account is disabled. Contact support.");
-            }
-
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
             response.put("message", "Login successful");
@@ -82,6 +82,11 @@ public class AuthController {
             response.put("email", user.getEmail());
 
             return ResponseEntity.ok(response);
+        } catch (org.springframework.security.core.AuthenticationException e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("success", "false");
+            error.put("error", "Invalid username or password");
+            return ResponseEntity.status(401).body(error);
         } catch (Exception e) {
             Map<String, String> error = new HashMap<>();
             error.put("success", "false");

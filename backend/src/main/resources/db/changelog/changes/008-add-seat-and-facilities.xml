@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="010-add-seat-and-facilities-columns" author="copilot">
+        <addColumn tableName="trains">
+            <column name="seats_per_carriage" type="INT" defaultValueNumeric="60">
+                <constraints nullable="false"/>
+            </column>
+            <column name="facilities" type="VARCHAR(1000)"/>
+        </addColumn>
+
+        <addColumn tableName="reservations">
+            <column name="selected_seat_numbers" type="VARCHAR(500)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="011-seed-train-facilities" author="copilot">
+        <sql>
+            UPDATE trains SET facilities = 'WiFi,Power outlets,Bistro car,Air conditioning' WHERE train_number = 'IR1745';
+            UPDATE trains SET facilities = 'WiFi,Power outlets,Silent coach,Air conditioning' WHERE train_number = 'IR1821';
+            UPDATE trains SET facilities = 'Air conditioning,Bike spaces' WHERE train_number = 'R3002';
+            UPDATE trains SET facilities = 'WiFi,Power outlets,Family area,Air conditioning' WHERE train_number = 'IR1590';
+            UPDATE trains SET facilities = 'Air conditioning,Pet-friendly wagon' WHERE train_number = 'R4010';
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

@@ -8,7 +8,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import com.cfr.networkapp.model.User;
+import com.cfr.networkapp.service.UserService;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,18 +22,22 @@ public class ReservationController {
     @Autowired
     private ReservationService reservationService;
 
+    @Autowired
+    private UserService userService;
+
     @PostMapping("/book")
     public ResponseEntity<?> bookReservation(@RequestBody Map<String, Object> request) {
         try {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            Long userId = resolveUserId(auth, request.get("userId"));
+            Long userId = resolveAuthenticatedUserId(auth);
             if (userId == null) {
                 return ResponseEntity.status(401).body(Map.of("error", "User not authenticated"));
             }
             Long trainId = Long.parseLong(request.get("trainId").toString());
             Integer numberOfSeats = Integer.parseInt(request.get("numberOfSeats").toString());
+            List<Integer> selectedSeatNumbers = parseSelectedSeatNumbers(request.get("selectedSeatNumbers"));
 
-            Reservation reservation = reservationService.createReservation(userId, trainId, numberOfSeats);
+            Reservation reservation = reservationService.createReservation(userId, trainId, numberOfSeats, selectedSeatNumbers);
 
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
@@ -52,7 +58,7 @@ public class ReservationController {
     public ResponseEntity<?> getMyReservations(@RequestParam(required = false) Long userId) {
         try {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            Long resolvedUserId = resolveUserId(auth, userId);
+            Long resolvedUserId = resolveAuthenticatedUserId(auth);
             if (resolvedUserId == null) {
                 return ResponseEntity.status(401).body(Map.of("error", "User not authenticated"));
             }
@@ -91,7 +97,7 @@ public class ReservationController {
     public ResponseEntity<?> confirmPayment(@RequestBody Map<String, Object> request) {
         try {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            Long userId = resolveUserId(auth, request.get("userId"));
+            Long userId = resolveAuthenticatedUserId(auth);
             if (userId == null) {
                 return ResponseEntity.status(401).body(Map.of("error", "User not authenticated"));
             }
@@ -122,7 +128,7 @@ public class ReservationController {
     public ResponseEntity<?> cancelReservation(@PathVariable Long id, @RequestParam(required = false) Long userId) {
         try {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            Long resolvedUserId = resolveUserId(auth, userId);
+            Long resolvedUserId = resolveAuthenticatedUserId(auth);
             if (resolvedUserId == null) {
                 return ResponseEntity.status(401).body(Map.of("error", "User not authenticated"));
             }
@@ -147,17 +153,31 @@ public class ReservationController {
         }
     }
 
-    private Long resolveUserId(Authentication auth, Object requestUserId) {
+    private Long resolveAuthenticatedUserId(Authentication auth) {
         if (auth != null && auth.isAuthenticated() && auth.getPrincipal() instanceof User user) {
             return user.getId();
         }
-        if (requestUserId != null) {
-            try {
-                return Long.parseLong(requestUserId.toString());
-            } catch (NumberFormatException ignored) {
-                return null;
+        if (auth != null && auth.isAuthenticated()) {
+            String username = auth.getName();
+            if (username != null && !username.isBlank() && !"anonymousUser".equalsIgnoreCase(username)) {
+                return userService.findByUsername(username).map(User::getId).orElse(null);
             }
         }
         return null;
+    }
+
+    private List<Integer> parseSelectedSeatNumbers(Object selectedSeatNumbersPayload) {
+        if (!(selectedSeatNumbersPayload instanceof List<?> listPayload)) {
+            return null;
+        }
+
+        List<Integer> selectedSeatNumbers = new ArrayList<>();
+        for (Object value : listPayload) {
+            if (value == null) {
+                continue;
+            }
+            selectedSeatNumbers.add(Integer.parseInt(value.toString()));
+        }
+        return selectedSeatNumbers;
     }
 }

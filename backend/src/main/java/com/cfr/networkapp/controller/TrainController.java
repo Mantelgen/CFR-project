@@ -2,6 +2,7 @@ package com.cfr.networkapp.controller;
 
 import com.cfr.networkapp.model.Train;
 import com.cfr.networkapp.model.Station;
+import com.cfr.networkapp.service.ReservationService;
 import com.cfr.networkapp.service.TrainService;
 import com.cfr.networkapp.repository.StationRepository;
 import com.cfr.networkapp.dto.TrainDetailsDTO;
@@ -21,10 +22,12 @@ public class TrainController {
 
     private final TrainService trainService;
     private final StationRepository stationRepository;
+    private final ReservationService reservationService;
 
-    public TrainController(TrainService trainService, StationRepository stationRepository) {
+    public TrainController(TrainService trainService, StationRepository stationRepository, ReservationService reservationService) {
         this.trainService = trainService;
         this.stationRepository = stationRepository;
+        this.reservationService = reservationService;
     }
 
     @GetMapping("/search")
@@ -51,6 +54,8 @@ public class TrainController {
             .map(Station::getName).orElse("Unknown");
         String arrivalStationName = stationRepository.findById(train.getArrivalStationId())
             .map(Station::getName).orElse("Unknown");
+        int totalSeats = reservationService.getTotalSeatsForTrain(train);
+        int availableSeats = totalSeats - reservationService.getBookedSeatNumbers(train.getId()).size();
         TrainDetailsDTO dto = new TrainDetailsDTO(
             train.getId(),
             train.getTrainNumber(),
@@ -60,7 +65,11 @@ public class TrainController {
             train.getArrivalTime() != null ? train.getArrivalTime().toString() : null,
             train.getClass1Carriages(),
             train.getClass2Carriages(),
-            parseRouteStations(train.getRouteStations(), departureStationName, arrivalStationName)
+            train.getSeatsPerCarriage(),
+            totalSeats,
+            Math.max(availableSeats, 0),
+            parseRouteStations(train.getRouteStations(), departureStationName, arrivalStationName),
+            parseFacilities(train.getFacilities())
         );
         return ResponseEntity.ok(dto);
         }
@@ -88,6 +97,17 @@ public class TrainController {
             parsed.add(arrivalStationName);
         }
         return parsed;
+    }
+
+    private List<String> parseFacilities(String facilities) {
+        if (facilities == null || facilities.isBlank()) {
+            return List.of();
+        }
+
+        return Arrays.stream(facilities.split(","))
+                .map(String::trim)
+                .filter(name -> !name.isBlank())
+                .toList();
     }
 
     @PostMapping

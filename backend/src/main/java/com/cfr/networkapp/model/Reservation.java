@@ -34,6 +34,9 @@ public class Reservation {
     @Column(name = "is_confirmed")
     private Boolean isConfirmed = false;
 
+    @Column(name = "selected_seat_numbers")
+    private String selectedSeatNumbers;
+
     public Reservation() {}
 
     public Reservation(User user, Train train, Integer numberOfSeats) {
@@ -105,5 +108,13 @@ public class Reservation {
 
     public void setIsConfirmed(Boolean isConfirmed) {
         this.isConfirmed = isConfirmed;
+    }
+
+    public String getSelectedSeatNumbers() {
+        return selectedSeatNumbers;
+    }
+
+    public void setSelectedSeatNumbers(String selectedSeatNumbers) {
+        this.selectedSeatNumbers = selectedSeatNumbers;
     }
 }
