@@ -43,10 +43,12 @@ public class UserService implements UserDetailsService {
         
         User saved = userRepository.save(user);
 
-        // Do not block account creation on SMTP issues.
+        String displayName = (firstName != null && !firstName.isBlank()) ? firstName : username;
         try {
-            mailService.sendAccountConfirmationEmail(email, firstName, user.getConfirmationToken());
-        } catch (Exception ignored) {
+            mailService.sendAccountConfirmationEmail(saved.getEmail(), displayName, saved.getConfirmationToken());
+        } catch (Exception e) {
+            userRepository.deleteById(saved.getId());
+            throw new RuntimeException("Registration failed: unable to send confirmation email. Please verify mail configuration and try again.");
         }
 
         return saved;
