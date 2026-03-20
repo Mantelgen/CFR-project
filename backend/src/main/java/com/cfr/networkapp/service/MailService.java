@@ -15,6 +15,9 @@ public class MailService {
     @Value("${app.public-base-url:http://cfr.local}")
     private String publicBaseUrl;
 
+    @Value("${app.mail.from:noreply@cfr.local.com}")
+    private String fromAddress;
+
     @Value("${app.complaints.recipient:complaints@cfr.local}")
     private String complaintsRecipient;
 
@@ -28,7 +31,7 @@ public class MailService {
     public void sendTestEmail(String to) {
         SimpleMailMessage message = new SimpleMailMessage();
 
-        message.setFrom("noreply@cfr.local");
+        message.setFrom(fromAddress);
         message.setTo(to);
         message.setSubject("Test Email from CFR System");
         message.setText("This is a test email sent from the Spring Boot backend.");
@@ -40,7 +43,7 @@ public class MailService {
         SimpleMailMessage message = new SimpleMailMessage();
         String confirmationUrl = buildPublicUrl("/confirm-email", confirmationToken);
 
-        message.setFrom("noreply@cfr.local");
+        message.setFrom(fromAddress);
         message.setTo(to);
         message.setSubject("Confirm your CFR Account");
         message.setText("Hello " + firstName + ",\n\n" +
@@ -56,7 +59,7 @@ public class MailService {
         SimpleMailMessage message = new SimpleMailMessage();
         String confirmationUrl = buildPublicUrl("/confirm-reservation", confirmationToken);
 
-        message.setFrom("noreply@cfr.local");
+        message.setFrom(fromAddress);
         message.setTo(to);
         message.setSubject("Confirm your Train Reservation - CFR");
         message.setText("Hello " + firstName + ",\n\n" +
@@ -72,7 +75,7 @@ public class MailService {
     public void sendReservationConfirmedEmail(String to, String firstName, String trainNumber, String departureStation, String arrivalStation, String departureTime, String selectedSeatNumbers) {
         SimpleMailMessage message = new SimpleMailMessage();
 
-        message.setFrom("noreply@cfr.local");
+        message.setFrom(fromAddress);
         message.setTo(to);
         message.setSubject("Reservation Confirmed - CFR");
         message.setText("Hello " + firstName + ",\n\n" +
@@ -89,7 +92,7 @@ public class MailService {
 
     public void sendComplaintEmail(String userEmail, String username, String subject, String messageText, Long reservationId) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("noreply@cfr.local");
+        message.setFrom(fromAddress);
         message.setTo(complaintsRecipient);
         message.setReplyTo(userEmail);
         message.setSubject("[CFR Complaint] " + subject);
@@ -105,7 +108,7 @@ public class MailService {
 
     public void sendComplaintReceivedEmail(String to, String firstName) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("noreply@cfr.local");
+        message.setFrom(fromAddress);
         message.setTo(to);
         message.setSubject("We received your complaint - CFR");
         message.setText(

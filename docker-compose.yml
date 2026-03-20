@@ -108,7 +108,10 @@ services:
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: root_password
       SPRING_LIQUIBASE_ENABLED: false
-      SPRING_MAIL_HOST: mailpit
+      SPRING_MAIL_HOST: ${SPRING_MAIL_HOST:-mailpit}
+      SPRING_MAIL_PORT: ${SPRING_MAIL_PORT:-1025}
+      APP_COMPLAINTS_RECIPIENT: ${APP_COMPLAINTS_RECIPIENT:-complaints@cfr.local}
+      APP_MAIL_FROM: ${APP_MAIL_FROM:-noreply@cfr.local.com}
     depends_on:
       migration:
         condition: service_completed_successfully
