@@ -18,7 +18,10 @@ public class MailService {
     @Value("${app.mail.from:noreply@cfr.local.com}")
     private String fromAddress;
 
-    @Value("${app.complaints.recipient:complaints@cfr.local}")
+    @Value("${app.mail.complaints-from:complaint@cfr.local.com}")
+    private String complaintsFromAddress;
+
+    @Value("${app.complaints.recipient:complaints@cfr.local.com}")
     private String complaintsRecipient;
 
     private String buildPublicUrl(String path, String token) {
@@ -92,7 +95,7 @@ public class MailService {
 
     public void sendComplaintEmail(String userEmail, String username, String subject, String messageText, Long reservationId) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom(fromAddress);
+        message.setFrom(complaintsFromAddress);
         message.setTo(complaintsRecipient);
         message.setReplyTo(userEmail);
         message.setSubject("[CFR Complaint] " + subject);
@@ -108,7 +111,7 @@ public class MailService {
 
     public void sendComplaintReceivedEmail(String to, String firstName) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom(fromAddress);
+        message.setFrom(complaintsFromAddress);
         message.setTo(to);
         message.setSubject("We received your complaint - CFR");
         message.setText(

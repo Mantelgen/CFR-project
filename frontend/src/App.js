@@ -6,7 +6,6 @@ import ConfirmationPage from "./pages/ConfirmationPage";
 import MainDashboardPage from "./pages/MainDashboardPage";
 import AppErrorBoundary from "./components/AppErrorBoundary";
 import TrainDetailsPage from "./pages/TrainDetailsPage";
-import ComplaintPage from "./pages/ComplaintPage";
 import "./styles/app-theme.css";
 
 function App() {
@@ -40,7 +39,6 @@ function App() {
 
         <Route path="/train/:trainId" element={<TrainDetailsPage />} />
         <Route path="/my-reservations" element={<MyReservationsPage />} />
-        <Route path="/complaints" element={<ComplaintPage />} />
 
         {/* Default Route */}
         <Route path="*" element={<Navigate to="/" replace />} />

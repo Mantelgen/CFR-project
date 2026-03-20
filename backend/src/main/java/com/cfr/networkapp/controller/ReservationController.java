@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 import com.cfr.networkapp.model.User;
 import com.cfr.networkapp.service.UserService;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,9 +34,8 @@ public class ReservationController {
             }
             Long trainId = Long.parseLong(request.get("trainId").toString());
             Integer numberOfSeats = Integer.parseInt(request.get("numberOfSeats").toString());
-            List<Integer> selectedSeatNumbers = parseSelectedSeatNumbers(request.get("selectedSeatNumbers"));
 
-            Reservation reservation = reservationService.createReservation(userId, trainId, numberOfSeats, selectedSeatNumbers);
+            Reservation reservation = reservationService.createReservation(userId, trainId, numberOfSeats);
 
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
@@ -164,20 +162,5 @@ public class ReservationController {
             }
         }
         return null;
-    }
-
-    private List<Integer> parseSelectedSeatNumbers(Object selectedSeatNumbersPayload) {
-        if (!(selectedSeatNumbersPayload instanceof List<?> listPayload)) {
-            return null;
-        }
-
-        List<Integer> selectedSeatNumbers = new ArrayList<>();
-        for (Object value : listPayload) {
-            if (value == null) {
-                continue;
-            }
-            selectedSeatNumbers.add(Integer.parseInt(value.toString()));
-        }
-        return selectedSeatNumbers;
     }
 }
