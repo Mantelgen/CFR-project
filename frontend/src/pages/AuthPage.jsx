@@ -34,7 +34,7 @@ const AuthPage = ({ isLogin = true }) => {
         ? { username: formData.username, password: formData.password }
         : formData;
 
-      const response = await axios.post(endpoint, data, { timeout: 30000, withCredentials: true });
+      const response = await axios.post(endpoint, data, { timeout: 90000, withCredentials: true });
 
       if (response.data.success) {
         setSuccess(response.data.message);
@@ -56,7 +56,21 @@ const AuthPage = ({ isLogin = true }) => {
       }
     } catch (err) {
       if (err.code === "ECONNABORTED") {
-        setError("Request timed out while waiting for email service. Please verify SMTP/Postfix connectivity and try again.");
+        if (!isLogin) {
+          setSuccess(
+            "Registration request timed out, but your account may have been created and confirmation email may already be sent. Please check your inbox/Mailpit and then login."
+          );
+          setFormData({
+            username: "",
+            email: "",
+            password: "",
+            firstName: "",
+            lastName: "",
+          });
+          setTimeout(() => navigate("/login"), 3000);
+        } else {
+          setError("Login request timed out. Please try again.");
+        }
       } else {
         setError(
           err.response?.data?.error || "An error occurred. Please try again."
