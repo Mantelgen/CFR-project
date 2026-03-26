@@ -93,13 +93,68 @@ services:
       - cfr-network
 
 
-  # BACKEND SERVICE - REPLICAS
-  # To run with 3 backend replicas, use:
-  #   docker-compose up --scale backend=3 -d
-  # This will create backend_1, backend_2, backend_3 containers
-  # Nginx will automatically load balance requests across all replicas
+  # BACKEND SERVICES - FIXED TO 3 INSTANCES
+  # Nginx load balances across backend1, backend2, and backend3.
   # All replicas share the same Redis session store (configured in application.properties)
-  backend:
+  backend1:
+    build:
+      context: ./backend
+    restart: unless-stopped
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db-master:3306/cfr_db?allowPublicKeyRetrieval=true&useSSL=false
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root_password
+      SPRING_LIQUIBASE_ENABLED: false
+      SPRING_MAIL_HOST: ${SPRING_MAIL_HOST:-mailpit}
+      SPRING_MAIL_PORT: ${SPRING_MAIL_PORT:-1025}
+      APP_COMPLAINTS_RECIPIENT: ${APP_COMPLAINTS_RECIPIENT:-complaints@cfr.local}
+      APP_MAIL_FROM: ${APP_MAIL_FROM:-noreply@cfr.local.com}
+      APP_MAIL_COMPLAINTS_FROM: ${APP_MAIL_COMPLAINTS_FROM:-complaint@cfr.local.com}
+      APP_PUBLIC_BASE_URL: ${APP_PUBLIC_BASE_URL:-https://cfr.local}
+    depends_on:
+      migration:
+        condition: service_completed_successfully
+      mailpit:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL","wget -q --spider http://localhost:8080/api/status || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+    networks:
+      - cfr-network
+
+  backend2:
+    build:
+      context: ./backend
+    restart: unless-stopped
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db-master:3306/cfr_db?allowPublicKeyRetrieval=true&useSSL=false
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root_password
+      SPRING_LIQUIBASE_ENABLED: false
+      SPRING_MAIL_HOST: ${SPRING_MAIL_HOST:-mailpit}
+      SPRING_MAIL_PORT: ${SPRING_MAIL_PORT:-1025}
+      APP_COMPLAINTS_RECIPIENT: ${APP_COMPLAINTS_RECIPIENT:-complaints@cfr.local}
+      APP_MAIL_FROM: ${APP_MAIL_FROM:-noreply@cfr.local.com}
+      APP_MAIL_COMPLAINTS_FROM: ${APP_MAIL_COMPLAINTS_FROM:-complaint@cfr.local.com}
+      APP_PUBLIC_BASE_URL: ${APP_PUBLIC_BASE_URL:-https://cfr.local}
+    depends_on:
+      migration:
+        condition: service_completed_successfully
+      mailpit:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL","wget -q --spider http://localhost:8080/api/status || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+    networks:
+      - cfr-network
+
+  backend3:
     build:
       context: ./backend
     restart: unless-stopped
@@ -154,7 +209,11 @@ services:
       - nginx-logs:/var/log/nginx
       - ./nginx/certs:/etc/nginx/certs:ro
     depends_on:
-      backend:
+      backend1:
+        condition: service_healthy
+      backend2:
+        condition: service_healthy
+      backend3:
         condition: service_healthy
       frontend:
         condition: service_healthy
